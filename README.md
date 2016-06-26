@@ -6,6 +6,6 @@ The project now contains only three basic files:
 - index.xsl creates the index page
 - browsepages.xsl creates a page for each element or view 
 
-Xml can be transformed by using Saxon9HE for exmaple.
+Xml can be transformed by using Saxon9HE for example.
 
 Far from finished but a good start. Have to learn GitHub at the same time
