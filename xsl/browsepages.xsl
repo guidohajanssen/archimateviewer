@@ -10,8 +10,6 @@
 	>
 <xsl:param name="folder"/>
 
-
-
 <xsl:template match="/">
 	<xsl:for-each select="//arc:element | //arc:view">
 		<xsl:result-document method="html" href="{$folder}/browsepage-{@identifier}.html">
@@ -20,81 +18,24 @@
 				´	<title><xsl:value-of select="arc:label"/></title>
 					<meta charset="utf-8"/>
 					<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-					<meta name="viewport" content="width=device-width, initial-scale=1"/>
 					<!-- JQUERY (use 1.x branch to be compatible with IE 6/7/8) / UI / LAYOUT -->
-					<script type="text/javascript" src="lib/jquery/js/jquery-1.11.2.min.js"></script>
-					<script type="text/javascript" src="lib/jquery-ui/js/jquery-ui-1.11.2.min.js"></script>
-					<script type="text/javascript" src="lib/jquery-ui-layout/js/jquery.layout-1.4.4.js"></script>
-					<link type="text/css" rel="stylesheet" href="lib/jquery-ui-layout/css/layout-default-1.4.4.css"/>
+					<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+					<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>	<script type="text/javascript" src="lib/jquery-ui-layout/js/jquery.layout-1.4.4.js"></script>				
+					<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-layout/1.4.3/jquery.layout.min.js"></script>
+					<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-layout/1.4.3/layout-default.min.css"/>
 					<!-- BOOTSTRAP -->
-					<link type="text/css" rel="stylesheet" href="lib/bootstrap/css/bootstrap-3.3.2.min.css"/>
-					<link type="text/css" rel="stylesheet" href="lib/bootstrap/css/bootstrap-theme-3.3.2.min.css"/>
-					<script type="text/javascript" src="lib/bootstrap/js/bootstrap-3.3.2.min.js"></script>
+					<!-- Latest compiled and minified CSS -->
+					<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"/>
+					<!-- Optional theme -->
+					<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"/>
+					<!-- Latest compiled and minified JavaScript -->
+					<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+					<!-- D3PLUS -->
+					<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+					<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3plus/1.9.5/d3plus.min.js"></script>
 					<!-- REPORT SPECIFIC -->
 					<link type="text/css" rel="stylesheet" href="css/model.css"/>
-
-					<script type="text/javascript" src="lib/d3plus/js/d3.js"></script>
-					<script type="text/javascript" src="lib/d3plus/js/d3plus.js"></script>
-					<script>
-						// text wrapping for all svg nodes
-						function textwrap(element) {
-							var texts = element.getElementsByTagName("text");
-							var i=0;
-							for (i=0; i&lt;texts.length;i++	) {
-								var width = texts[i].previousElementSibling.getAttribute("width");
-								d3plus.textwrap()
-										.container(d3.select(texts[i]))
-										.width(width-20)
-										.draw();
-							}
-						};
-						
-						function setRootPanelHeight() {
-							$('.root-panel-body').css('height', $('.root-panel').outerHeight() - $('.root-panel-heading').outerHeight());
-						}
-					
-						$(document).ready(function() {
-						
-							// Set jQuery UI Layout panes
-							$('body').layout({
-								minSize: 50,
-								maskContents: true,
-								north: {
-								  size: 55,
-								  spacing_open: 8,
-								  closable: false,
-								  resizable: false
-								},
-								west: {
-										size: 350,
-										spacing_open: 8
-									},
-								west__childOptions: {
-								  maskContents: true,
-								  south: {
-									  minSize: 50,
-											size: 250,
-											spacing_open: 8
-										},
-										center: {
-											minSize: 50,
-											onresize: "setRootPanelHeight"
-										}
-								}
-							});
-						
-							// Set heigh of panels the first time
-							setRootPanelHeight();
-						
-							textwrap(document);
-							
-							$(".documentation").each(function() {
-								$(this).html($(this).text());
-							});
-							
-						});
-						
-					</script>
+					<script type="text/javascript" src="js/browse.js"></script>
 				</head>
 				<body>
 					<div class="ui-layout-center">
@@ -277,7 +218,7 @@
 			<b><xsl:value-of select="arc:label"/></b>
 		</div>
 		<div class="panel-body root-panel-body">
-		<p><xsl:value-of select="arc:documenation"/></p>
+		<p><xsl:value-of select="arc:documentation"/></p>
 		<div class="col-md-12">
 				<!-- calculate svg width and height based on the nodes in the view -->
 				<xsl:variable name="maxheight">
