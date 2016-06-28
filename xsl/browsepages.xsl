@@ -281,10 +281,12 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
-	<xsl:variable name="svg_x" select="@x"/>
-	<xsl:variable name="svg_y" select="@y"/>
-	<xsl:variable name="svg_w" select="@w"/>
-	<xsl:variable name="svg_h" select="@h"/>
+	<xsl:variable name="x1" select="@x"/>
+	<xsl:variable name="y1" select="@y"/>
+	<xsl:variable name="w" select="@w"/>
+	<xsl:variable name="h" select="@h"/>
+	<xsl:variable name="x2" select="$x1+$w"/>
+	<xsl:variable name="y2" select="$y1+$h"/>
 	<xsl:variable name="svg_stroke_r" select="arc:style/arc:lineColor/@r"/>
 	<xsl:variable name="svg_stroke_g" select="arc:style/arc:lineColor/@g"/>
 	<xsl:variable name="svg_stroke_b" select="arc:style/arc:lineColor/@b"/>
@@ -294,45 +296,64 @@
 		<xsl:when test="@elementref">		
 			<xsl:variable name="svg_text" select="$element/arc:label"/>
 			<a xlink:href="browsepage-{@elementref}.html">
-				<rect x="{$svg_x}" y="{$svg_y}" width="{$svg_w}" height="{$svg_h}" style="{$svg_style}">
+				<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}">
 				</rect>
-				<text text-anchor="middle" x="{$svg_x+5}" y="{$svg_y+5}" width="{$svg_w+-60}" font-size="12"><xsl:value-of select="$svg_text"/></text>
+				<text text-anchor="middle" x="{$x1+5}" y="{$y1+5}" width="{$w+-60}" font-size="12"><xsl:value-of select="$svg_text"/></text>
 				<xsl:choose>
 					<xsl:when test="$element/@xsi:type='SystemSoftware'">
-						<circle cx="{$svg_x+$svg_w+-10}" cy="{$svg_y+10}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
-						<circle cx="{$svg_x+$svg_w+-12}" cy="{$svg_y+12}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
+						<circle cx="{$x2+-10}" cy="{$y1+10}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
+						<circle cx="{$x2+-12}" cy="{$y1+12}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='Node'">
-						<path d="M{$svg_x+$svg_w+-18},{$svg_y+8} L{$svg_x+$svg_w+-15},{$svg_y+5} L{$svg_x+$svg_w+-5},{$svg_y+5} L{$svg_x+$svg_w+-5},{$svg_y+15} L{$svg_x+$svg_w+-8},{$svg_y+18}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<line x1="{$svg_x+$svg_w+-5}" y1="{$svg_y+5}" x2="{$svg_x+$svg_w+-8}" y2="{$svg_y+8}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<rect x="{$svg_x+$svg_w+-18}" y="{$svg_y+8}" width="10" height="10" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<path d="M{$x2+-18},{$y1+8} L{$x2+-15},{$y1+5} L{$x2+-5},{$y1+5} L{$x2+-5},{$y1+15} L{$x2+-8},{$y1+18}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<line x1="{$x2+-5}" y1="{$y1+5}" x2="{$x2+-8}" y2="{$y1+8}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<rect x="{$x2+-18}" y="{$y1+8}" width="10" height="10" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='Device'">
-						<path d="M{$svg_x+$svg_w+-17},{$svg_y+18} L{$svg_x+$svg_w+-9},{$svg_y+11} L{$svg_x+$svg_w+-3},{$svg_y+18} L{$svg_x+$svg_w+-17},{$svg_y+18}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<rect x="{$svg_x+$svg_w+-15}" y="{$svg_y+5}" width="11" height="9" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<path d="M{$x2+-17},{$y1+18} L{$x2+-9},{$y1+11} L{$x2+-3},{$y1+18} L{$x2+-17},{$y1+18}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<rect x="{$x2+-15}" y="{$y1+5}" width="11" height="9" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='ApplicationComponent'">
-						<rect x="{$svg_x+$svg_w+-15}" y="{$svg_y+5}" width="10" height="14" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<rect x="{$svg_x+$svg_w+-18}" y="{$svg_y+7}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<rect x="{$svg_x+$svg_w+-18}" y="{$svg_y+13}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<rect x="{$x2+-15}" y="{$y1+5}" width="10" height="14" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<rect x="{$x2+-18}" y="{$y1+7}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<rect x="{$x2+-18}" y="{$y1+13}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='Product'">
-						<rect x="{$svg_x+$svg_w+-18}" y="{$svg_y+5}" width="12" height="10" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<rect x="{$svg_x+$svg_w+-18}" y="{$svg_y+5}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<rect x="{$x2+-18}" y="{$y1+5}" width="12" height="10" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<rect x="{$x2+-18}" y="{$y1+5}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
-					<xsl:when test="$element/@xsi:type='BusinessRole'">
-						<circle cx="{$svg_x+$svg_w+-17}" cy="{$svg_y+10}" r="4" fill="{$fillColor}" stroke="black" stroke-width="1"/>
-						<rect x="{$svg_x+$svg_w+-17}" y="{$svg_y+5}" width="6" height="10" fill="{$fillColor}" stroke="${fillColor}" stroke-width="0.75"/> 
-						<circle cx="{$svg_x+$svg_w+-10}" cy="{$svg_y+10}" r="4" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
-						<line x1="{$svg_x+$svg_w+-17}" y1="{$svg_y+6}" x2="{$svg_x+$svg_w+-11}" y2="{$svg_y+6}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<line x1="{$svg_x+$svg_w+-17}" y1="{$svg_y+14}" x2="{$svg_x+$svg_w+-11}" y2="{$svg_y+14}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+					<xsl:when test="$element/@xsi:type='BusinessRole' or $element/@xsi:type='Stakeholder'">
+						<circle cx="{$x2+-17}" cy="{$y1+10}" r="4" fill="{$fillColor}" stroke="black" stroke-width="1"/>
+						<rect x="{$x2+-17}" y="{$y1+5}" width="6" height="10" fill="{$fillColor}" stroke="${fillColor}" stroke-width="0.75"/> 
+						<circle cx="{$x2+-10}" cy="{$y1+10}" r="4" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
+						<line x1="{$x2+-17}" y1="{$y1+6}" x2="{$x2+-11}" y2="{$y1+6}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<line x1="{$x2+-17}" y1="{$y1+14}" x2="{$x2+-11}" y2="{$y1+14}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='BusinessActor'">
-						<circle cx="{$svg_x+$svg_w+-9}" cy="{$svg_y+7}" r="3" fill="{$fillColor}" stroke="black" stroke-width="1"/>
-						<line x1="{$svg_x+$svg_w+-9}" y1="{$svg_y+10}" x2="{$svg_x+$svg_w+-9}" y2="{$svg_y+16}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<line x1="{$svg_x+$svg_w+-13}" y1="{$svg_y+12}" x2="{$svg_x+$svg_w+-5}" y2="{$svg_y+12}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<line x1="{$svg_x+$svg_w+-9}" y1="{$svg_y+16}" x2="{$svg_x+$svg_w+-13}" y2="{$svg_y+21}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<line x1="{$svg_x+$svg_w+-9}" y1="{$svg_y+16}" x2="{$svg_x+$svg_w+-5}" y2="{$svg_y+21}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<circle cx="{$x2+-9}" cy="{$y1+7}" r="3" fill="{$fillColor}" stroke="black" stroke-width="1"/>
+						<line x1="{$x2+-9}" y1="{$y1+10}" x2="{$x2+-9}" y2="{$y1+16}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<line x1="{$x2+-13}" y1="{$y1+12}" x2="{$x2+-5}" y2="{$y1+12}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<line x1="{$x2+-9}" y1="{$y1+16}" x2="{$x2+-13}" y2="{$y1+21}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<line x1="{$x2+-9}" y1="{$y1+16}" x2="{$x2+-5}" y2="{$y1+21}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='BusinessProcess'">
+						<path d="M{$x2 - 18},{$y1+8} h9 v-3 L{$x2 - 5},{$y1+10} L{$x2 - 9},{$y1+15} v-3 h-9 Z" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='BusinessObject' or $element/@xsi:type='DataObject' or $element/@xsi:type='Contract'">
+						<rect x="{$x2 - 18}" y="{$y1+5}" width="12" height="10" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<path d="M{$x2 - 18},{$y1+8} h12" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='BusinessInteraction' or $element/@xsi:type='ApplicationInteraction'">
+						<path d="M{$x2 - 12} {$y1+6} A 5 5 0 0 0 {$x2 - 12} {$y1 + 16} Z" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
+						<path d="M{$x2 - 9} {$y1+16} A 5 5 0 0 0 {$x2 - 9} {$y1 + 6} Z" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='BusinessCollaboration' or $element/@xsi:type='ApplicationCollaboration'">
+						<circle cx="{$x2 - 14}" cy="{$y1+11}" r="6" fill="none" stroke="black" stroke-width="1"/> 
+						<circle cx="{$x2 - 10}" cy="{$y1+11}" r="6" fill="none" stroke="black" stroke-width="1"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='BusinessInterface' or $element/@xsi:type='ApplicationInterface' or $element/@xsi:type='InfrastructureInterface'">
+						<circle cx="{$x2+-10}" cy="{$y1+10}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
+						<path d="M{$x2 - 13},{$y1+13} h-5" fill="none" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:otherwise>
 						<!-- TODO create shapes for other types -->	
@@ -342,8 +363,8 @@
 			</a>
 	</xsl:when>
 	<xsl:otherwise>
-		<rect x="{$svg_x}" y="{$svg_y}" width="{$svg_w}" height="{$svg_h}" style="{$svg_style}" />
-		<text x="{$svg_x+5}" y="{$svg_y+15}" width="{$svg_w}" font-size="12"><xsl:value-of select="arc:label"/></text>
+		<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}" />
+		<text x="{$x1+5}" y="{$y1+15}" width="{$w}" font-size="12"><xsl:value-of select="arc:label"/></text>
 	</xsl:otherwise>
 	</xsl:choose>
 	<xsl:apply-templates select="arc:node"/>
