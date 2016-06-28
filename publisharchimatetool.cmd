@@ -5,4 +5,4 @@ mkdir output\site\%2
 java -jar lib/java/saxon/saxon9he.jar -xsl:xsl/index.xsl -s:output\open-exchange/%2.xml -o:output\site\%2/index.html
 java -jar lib/java/saxon/saxon9he.jar -xsl:xsl/browsepages.xsl -s:output\open-exchange/%2.xml folder=output\site\%2
 mkdir output\site\%2\lib 
-xcopy lib\reportlibs output\site\%2 /s /e
+xcopy lib\reportlibs output\site\%2 /s /e /y
