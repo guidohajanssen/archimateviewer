@@ -144,9 +144,10 @@
 	</xsl:template>
 	
 	<xsl:template match="bendpoint">
-		<!-- TODO: fix bendpoint 
-			<arc:bendpoint x="{@endX+sum(./ancestor::child/bounds/@x)}" y="{@endY+sum(./ancestor::child/bounds/@y)}"/>
-		-->
+		<xsl:variable name="sourceid" select="../@source"/>
+		<xsl:variable name="source" select="//child[@id=$sourceid]"/>
+		<arc:bendpoint x="{$source/bounds/@x+sum($source/ancestor::child/bounds/@x)+$source/bounds/@width div 2 + @startX}" 
+					   y="{$source/bounds/@y+sum($source/ancestor::child/bounds/@y)+$source/bounds/@height div 2 + @startY}"/>
 	</xsl:template>
 	
 	<xsl:template name="properties">
