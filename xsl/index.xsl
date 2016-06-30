@@ -77,6 +77,10 @@
 								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Application']"/>
 					
 								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Technology']"/>
+								
+								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Motivation']"/>
+								
+								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Implementation &amp; Migration']"/>
 							</ul>
 						</div>
 					</div>
