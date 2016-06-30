@@ -86,14 +86,13 @@
 	<xsl:variable name="folder"><xsl:value-of select="arc:properties/arc:property[@identifierref=//arc:propertydef[@name='folder']/@identifier]/arc:value"/></xsl:variable>
 	<div class="panel panel-default root-panel">
 		<div class="panel-heading root-panel-heading">
-			<b><xsl:value-of select="arc:label"/><xsl:text> </xsl:text><a href="printpage-{@identifier}.html" target="_blank"><span class="glyphicon glyphicon-print"/></a></b>
+			<b><xsl:value-of select="arc:label"/></b>
 		</div>
 		<div class="panel-body root-panel-body">
 			<div class="col-md-12">
 				<xsl:variable name="properties" select="/arc:model/arc:propertydefs/arc:propertydef[@identifier=//arc:element[@identifier=/arc:model/arc:organization//arc:item[arc:label=$folder]//arc:item/@identifierref]//arc:property/@identifierref]"/>
-				<xsl:for-each select="/arc:model/arc:organization//arc:item[arc:label=$folder]/arc:item[arc:label]">
-					<xsl:sort select="arc:label"/>
-					<h4><xsl:value-of select="arc:label"/></h4>
+				<!--xsl:for-each-group select="/arc:model/arc:organization//arc:item[arc:label=$folder]" group-by="//arc:element[@identifier=current()/arc:item/@identifierred]/@xsi:type">
+					<h4><xsl:value-of select="current-group()/@xsi:type"/></h4-->
 					<table class="table table-condensed table-bordered">
 						<tr>
 							<th>Name</th>
@@ -102,7 +101,7 @@
 								<th><xsl:value-of select="@name"/></th>
 							</xsl:for-each>
 						</tr>
-						<xsl:for-each select="current()//arc:item[@identifierref]">
+						<xsl:for-each select="/arc:model/arc:organization//arc:item[arc:label=$folder]//arc:item[@identifierref]">
 							<xsl:sort select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
 							<xsl:variable name="element" select="//arc:element[@identifier=current()/@identifierref]"/>
 							<tr>
@@ -123,7 +122,7 @@
 							</tr>
 						</xsl:for-each>
 					</table>
-				</xsl:for-each>
+				<!--/xsl:for-each-group-->
 			
 			</div>
 		</div>
@@ -136,7 +135,7 @@
 	<xsl:variable name="id" select="@identifier"/>
 	<div class="panel panel-default root-panel">
 		<div class="panel-heading root-panel-heading">
-			<b><xsl:value-of select="@xsi:type"/>&#160;<xsl:value-of select="arc:label"/></b>
+			<h4><xsl:value-of select="@xsi:type"/>&#160;<xsl:value-of select="arc:label"/></h4>
 		</div>
 		<div class="panel-body root-panel-body">
 			
@@ -158,50 +157,57 @@
 						</tr>
 					</xsl:for-each>
 				</table>
+				<h4>Shown in Views</h4>
 				<table class="table table-hover table-condensed small">
 					<!-- list of views in which the element appears -->
 					<xsl:for-each select="/arc:model/arc:views/arc:view//arc:node[@elementref=$id]/ancestor::arc:view">
 						<tr>
-							<td class="col-md-2">Shown in</td>
 							<xsl:variable name="viewid" select="@identifier"/>
 							<td class="col-md-10">
 								<a href="browsepage-{$viewid}.html"><xsl:value-of select="arc:label"/></a>
 							</td>
 						</tr>
 					</xsl:for-each>
-					
-					<!-- list of relationships of the element -->
-					<xsl:for-each select="/arc:model/arc:relationships/arc:relationship[@source=$id]">
-						<xsl:sort select="@xsi:type"/>
-						<tr>
-							<xsl:variable name="targetid" select="@target"/>
-							<td class="col-md-2">
-								<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;to
-							</td>
-							<td class="col-md-10">
-								<a href="browsepage-{$targetid}.html"> 
-									<xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$targetid]/@xsi:type"/>&#160;
-									<xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$targetid]/arc:label"/>
-								</a>
-							</td>
-						</tr>
-					</xsl:for-each>
-					<xsl:for-each select="/arc:model/arc:relationships/arc:relationship[@target=$id]">
-						<xsl:sort select="@xsi:type"/>
-						<tr>
-							<xsl:variable name="sourceid" select="@source"/>
-							<td class="col-md-2">
-								<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;from
-							</td>
-							<td class="col-md-4">
-								<a href="browsepage-{$sourceid}.html">
-									<xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$sourceid]/@xsi:type"/>&#160;
-									<xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$sourceid]/arc:label"/>
-								</a>
-							</td>
-						</tr>
-					</xsl:for-each>
 				</table>
+				<!-- list of relationships of the element -->
+				<xsl:for-each-group select="/arc:model/arc:relationships/arc:relationship[@source=$id]" group-by="//arc:element[@identifier=current()/@target]/@xsi:type">
+					<h4><xsl:value-of select="//arc:element[@identifier=current()/@target]/@xsi:type"/></h4>
+					<table class="table table-hover table-condensed small"> 
+						<xsl:for-each select="current-group()">
+							<xsl:sort select="@xsi:type"/>
+							<tr>
+								<xsl:variable name="targetid" select="@target"/>
+								<td class="col-md-2">
+									<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;to
+								</td>
+								<td class="col-md-10">
+									<a href="browsepage-{$targetid}.html"> 
+										<xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$targetid]/arc:label"/>
+									</a>
+								</td>
+							</tr>
+						</xsl:for-each>
+					</table>
+				</xsl:for-each-group>
+				<xsl:for-each-group select="/arc:model/arc:relationships/arc:relationship[@target=$id]" group-by="//arc:element[@identifier=current()/@source]/@xsi:type">
+					<h4><xsl:value-of select="//arc:element[@identifier=current()/@source]/@xsi:type"/></h4>
+					<table class="table table-hover table-condensed small">
+						<xsl:for-each select="current-group()">
+							<xsl:sort select="@xsi:type"/>
+							<tr>
+								<xsl:variable name="sourceid" select="@source"/>
+								<td class="col-md-2">
+									<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;from
+								</td>
+								<td class="col-md-10">
+									<a href="browsepage-{$sourceid}.html">
+										<xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$sourceid]/arc:label"/>
+									</a>
+								</td>
+							</tr>
+						</xsl:for-each>
+					</table>
+				</xsl:for-each-group>
 			</div>
 		</div>
 		<div class="col-md-6">
@@ -350,12 +356,21 @@
 						<path d="M{$x2 - 9} {$y1+16} A 5 5 0 0 0 {$x2 - 9} {$y1 + 6} Z" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='BusinessCollaboration' or $element/@xsi:type='ApplicationCollaboration'">
-						<circle cx="{$x2 - 14}" cy="{$y1+11}" r="6" fill="none" stroke="black" stroke-width="1"/> 
-						<circle cx="{$x2 - 10}" cy="{$y1+11}" r="6" fill="none" stroke="black" stroke-width="1"/> 
+						<circle cx="{$x2 - 14}" cy="{$y1+11}" r="5" fill="none" stroke="black" stroke-width="1"/> 
+						<circle cx="{$x2 - 10}" cy="{$y1+11}" r="5" fill="none" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='BusinessInterface' or $element/@xsi:type='ApplicationInterface' or $element/@xsi:type='InfrastructureInterface'">
-						<circle cx="{$x2+-10}" cy="{$y1+10}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
-						<path d="M{$x2 - 13},{$y1+13} h-5" fill="none" stroke="black" stroke-width="1"/> 
+						<circle cx="{$x2 - 8}" cy="{$y1+10}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
+						<path d="M{$x2 - 13},{$y1+10} h-5" fill="none" stroke="black" stroke-width="1"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='BusinessFunction' or $element/@xsi:type='ApplicationFunction' or $element/@xsi:type='InfrastructureFunction'">
+						<path d="M{$x2 - 8},{$y1+5} l5,5 v5 l-5,-5 l-5,5 v-5 Z" fill="none" stroke="black" stroke-width="1"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='BusinessService' or $element/@xsi:type='ApplicationService' or $element/@xsi:type='InfrastructureService'">
+						<rect x="{$x2 - 18}" y="{$y1+5}" rx="3" ry="3" width="13" height="7" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Value'">
+						<ellipse cx="{$x2 - 13}" cy="{$y1+10}" rx="8" ry="4" fill="none" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:otherwise>
 						<!-- TODO create shapes for other types -->	
