@@ -371,6 +371,37 @@
 					<xsl:when test="$element/@xsi:type='Value'">
 						<ellipse cx="{$x2 - 13}" cy="{$y1+10}" rx="8" ry="4" fill="none" stroke="black" stroke-width="1"/> 
 					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Meaning'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Representation'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Location'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Artifact'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Driver'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Assessment'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Goal'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Principle'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Requirement'">
+						
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Constraint'">
+						
+					</xsl:when>
+					
 					<xsl:otherwise>
 						<!-- TODO create shapes for other types -->	
 					</xsl:otherwise>
@@ -378,9 +409,13 @@
 				
 			</a>
 	</xsl:when>
+	<!-- draw group box -->
 	<xsl:otherwise>
-		<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}" />
-		<text x="{$x1+5}" y="{$y1+15}" width="{$w}" font-size="12"><xsl:value-of select="arc:label"/></text>
+		<xsl:variable name="colorratio">0.9</xsl:variable>
+		<rect x="{$x1}" y="{$y1}" width="{$w div 2}" height="17" 
+			style="fill:rgb({fn:round(arc:style/arc:fillColor/@r * $colorratio)},{fn:round(arc:style/arc:fillColor/@g * $colorratio)},{fn:round(arc:style/arc:fillColor/@b * $colorratio)}); strokewidth:1; stroke:{$strokeColor}" />
+		<rect x="{$x1}" y="{$y1+17}" width="{$w}" height="{$h - 16}" style="{$svg_style}"/>
+		<text x="{$x1+5}" y="{$y1+2}" width="{$w}" font-size="12"><xsl:value-of select="arc:label"/></text>
 	</xsl:otherwise>
 	</xsl:choose>
 	<xsl:apply-templates select="arc:node"/>
