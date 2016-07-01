@@ -250,19 +250,22 @@
 							<circle cx="5" cy="5" r="3" style="stroke: none; fill:#000000;"/>
 						</marker>
 						<marker id="markerOpenDiamond" markerWidth="16" markerHeight="16" refX="2" refY="5" orient="auto">
-							<path d="M8,2 L0,6 L8,10 L16,6 Z" style="fill: white; stroke:black; stroke-width:1" />
+							<path d="M10,1 L3,5 L10,9 L18,5 Z" style="fill: white; stroke:black; stroke-width:1" />
 						</marker>
 						<marker id="markerClosedDiamond" markerWidth="16" markerHeight="16" refX="2" refY="5" orient="auto">
-							<path d="M8,2 L0,6 L8,10 L16,6 Z" style="fill: black; stroke:black; stroke-width:1" />
+							<path d="M10,1 L3,5 L10,9 L18,5 Z" style="fill: black; stroke:black; stroke-width:1" />
 						</marker>
 						<marker id="markerClosedBlockArrow" markerWidth="13" markerHeight="13" refX="10" refY="6" orient="auto">
-							<path d="M2,2 L2,11 L10,6 Z" style="stroke:black; stroke-width:1; fill: black; " />
+							<path d="M0,0 L9,6 L0,12 Z" style="stroke:black; stroke-width:1; fill: black; " />
 						</marker>
 						<marker id="markerOpenBlockArrow" markerWidth="13" markerHeight="13" refX="10" refY="6" orient="auto">
-							<path d="M2,2 L2,11 L10,6 Z" style="stroke:black; stroke-width:1; fill: white; " />
+							<path d="M0,0 L9,6 L0,12 Z" style="stroke:black; stroke-width:1; fill: white; " />
 						</marker>
 						<marker id="markerOpenArrow" markerWidth="13" markerHeight="13" refX="10" refY="6" orient="auto">
-							<path d="M2,2 L10,6 L2,11" style="fill: none; stroke: black; stroke-width:1" />
+							<path d="M2,2 L9,6 L2,10" style="fill: none; stroke: black; stroke-width:1" />
+						</marker>
+						<marker id="markerClosedArrow" markerWidth="13" markerHeight="13" refX="10" refY="6" orient="auto">
+							<path d="M2,2 L9,6 L2,10 Z" style="fill: black; stroke: black; stroke-width:1" />
 						</marker>
 					</defs>
 					
@@ -304,7 +307,18 @@
 	<xsl:choose>
 		<xsl:when test="@elementref">	
 			<a xlink:href="browsepage-{@elementref}.html">
-				<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}"></rect>
+				<xsl:choose>
+					<xsl:when test="$element/@xsi:type='BusinessProcess' or $element/@xsi:type='BusinessInteraction' or $element/@xsi:type='BusinessFunction'">
+						<rect x="{$x1}" y="{$y1}" rx="10" ry="10" width="{$w}" height="{$h}" style="{$svg_style}"/>
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='BusinessService' or $element/@xsi:type='ApplicationService' or $element/@xsi:type='InfrastructureService'">
+						<rect x="{$x1}" y="{$y1}" rx="15" ry="{$h}" width="{$w}" height="{$h}" style="{$svg_style}"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}"/>
+					</xsl:otherwise>
+				</xsl:choose>
+				
 				<text text-anchor="middle" x="{$x1+5}" y="{$y1+5}" width="{$w+-60}" font-size="12"><xsl:value-of select="$element/arc:label"/></text>
 				<xsl:choose>
 					<xsl:when test="$element/@xsi:type='SystemSoftware'">
@@ -366,7 +380,7 @@
 						<path d="M{$x2 - 8},{$y1+5} l5,5 v5 l-5,-5 l-5,5 v-5 Z" fill="none" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='BusinessService' or $element/@xsi:type='ApplicationService' or $element/@xsi:type='InfrastructureService'">
-						<rect x="{$x2 - 18}" y="{$y1+5}" rx="3" ry="3" width="13" height="7" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<rect x="{$x2 - 22}" y="{$y1+5}" rx="3" ry="3" width="13" height="7" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='Value'">
 						<ellipse cx="{$x2 - 13}" cy="{$y1+10}" rx="8" ry="4" fill="none" stroke="black" stroke-width="1"/> 
@@ -470,9 +484,9 @@
 			<xsl:when test="$relationship/@xsi:type='AssignmentRelationship'">marker-end: url(#markerCircleEnd);</xsl:when>
 			<xsl:when test="$relationship/@xsi:type='RealisationRelationship'">marker-end: url(#markerOpenBlockArrow);</xsl:when>
 			<xsl:when test="$relationship/@xsi:type='SpecialisationRelationship'">marker-end: url(#markerOpenBlockArrow);</xsl:when>
-			<xsl:when test="$relationship/@xsi:type='TriggeringRelationship'">marker-end: url(#markerClosedBlockArrow);</xsl:when>
-			<xsl:when test="$relationship/@xsi:type='FlowRelationship'">marker-end: url(#markerClosedBlockArrow);</xsl:when>
-			<xsl:when test="$relationship/@xsi:type='InfluenceRelationship'">marker-end: url(#markerClosedBlockArrow);</xsl:when>
+			<xsl:when test="$relationship/@xsi:type='TriggeringRelationship'">marker-end: url(#markerClosedArrow);</xsl:when>
+			<xsl:when test="$relationship/@xsi:type='FlowRelationship'">marker-end: url(#markerClosedArrow);</xsl:when>
+			<xsl:when test="$relationship/@xsi:type='InfluenceRelationship'">marker-end: url(#markerClosedArrow);</xsl:when>
 		</xsl:choose>
 	</xsl:variable>
 	<xsl:variable name="dash">
