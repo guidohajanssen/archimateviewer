@@ -117,6 +117,9 @@
 								<xsl:when test="//arc:element[@identifier=current()/@identifierref]">
 									<xsl:value-of select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
 								</xsl:when>
+								<xsl:when test="//arc:view[@identifier=current()/@identifierref]">
+									<xsl:value-of select="//arc:view[@identifier=current()/@identifierref]/arc:label"/>
+								</xsl:when>
 								<xsl:when test="//arc:relationship[@identifier=current()/@identifierref]">
 									<xsl:variable name="relationship" select="//arc:relationship[@identifier=current()/@identifierref]"/>
 									<xsl:choose>
