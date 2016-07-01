@@ -253,6 +253,20 @@
 					<arc:lineColor r="92" g="92" b="92" />
 				</arc:style>
 			</xsl:when>
+			<xsl:when test="$type='archimate:AndJunction' 
+				">
+				<arc:style>
+					<arc:fillColor r="0" g="0" b="0" />
+					<arc:lineColor r="92" g="92" b="92" />
+				</arc:style>
+			</xsl:when>
+			<xsl:when test="$type='archimate:OrJunction'
+				">
+				<arc:style>
+					<arc:fillColor r="255" g="255" b="255" />
+					<arc:lineColor r="92" g="92" b="92" />
+				</arc:style>
+			</xsl:when>
 			<xsl:otherwise>
 				<arc:style>
 					<arc:fillColor r="192" g="192" b="192" />
