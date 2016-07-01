@@ -215,6 +215,41 @@
 					<arc:lineColor r="92" g="92" b="92" />
 				</arc:style>
 			</xsl:when>
+			<xsl:when test="$type='archimate:Principle' or 
+				$type='archimate:Goal' or 
+				$type='archimate:Requirement' or 
+				$type='archimate:Constraint' 
+				">
+				<arc:style>
+					<arc:fillColor r="204" g="204" b="255" />
+					<arc:lineColor r="92" g="92" b="92" />
+				</arc:style>
+			</xsl:when>
+			<xsl:when test="$type='archimate:Gap' or 
+				$type='archimate:Plateau'  
+				">
+				<arc:style>
+					<arc:fillColor r="224" g="255" b="224" />
+					<arc:lineColor r="92" g="92" b="92" />
+				</arc:style>
+			</xsl:when>
+			<xsl:when test="$type='archimate:Workpackage' or 
+				$type='archimate:Deliverable'
+				">
+				<arc:style>
+					<arc:fillColor r="255" g="224" b="224" />
+					<arc:lineColor r="92" g="92" b="92" />
+				</arc:style>
+			</xsl:when>
+			<xsl:when test="$type='archimate:Stakeholder' or 
+				$type='archimate:Driver' or 
+				$type='archimate:Assessment' 
+				">
+				<arc:style>
+					<arc:fillColor r="191" g="223" b="255" />
+					<arc:lineColor r="92" g="92" b="92" />
+				</arc:style>
+			</xsl:when>
 			<xsl:otherwise>
 				<arc:style>
 					<arc:fillColor r="192" g="192" b="192" />
