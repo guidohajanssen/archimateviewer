@@ -9,7 +9,8 @@
 	xmlns:fn="http://www.w3.org/2005/xpath-functions"
 	>
 <xsl:param name="folder"/>
-
+<xsl:param name="configfile"/>
+<xsl:variable name="config" select="document($configfile)"/>
 <xsl:template match="/">
 	<xsl:for-each select="//arc:element | //arc:view">
 		<xsl:result-document method="html" href="{$folder}/browsepage-{@identifier}.html">
@@ -129,13 +130,13 @@
 	</div>
 </xsl:template>
 
-
+<!-- template for an element card -->
 <xsl:template match="arc:element">
 	<xsl:variable name="type" select="@xsi:type"/>
 	<xsl:variable name="id" select="@identifier"/>
 	<div class="panel panel-default root-panel">
 		<div class="panel-heading root-panel-heading">
-			<h4><xsl:value-of select="@xsi:type"/>&#160;<xsl:value-of select="arc:label"/></h4>
+			<h4><xsl:call-template name="elementtype"><xsl:with-param name="type" select="@xsi:type"/></xsl:call-template>&#160;<xsl:value-of select="arc:label"/></h4>
 		</div>
 		<div class="panel-body root-panel-body">
 			
@@ -146,7 +147,7 @@
 				<ol class="breadcrumb">	
 					<xsl:for-each select="/arc:model/arc:organization//arc:item[@identifierref=$id]/ancestor::arc:item[arc:label]">
 						<li><xsl:value-of select="arc:label"/></li>
-					</xsl:for-each>	
+					</xsl:for-each>		
 				</ol>
 				<table class="table table-condensed small">
 					<xsl:for-each select="arc:properties/arc:property">
@@ -157,7 +158,7 @@
 						</tr>
 					</xsl:for-each>
 				</table>
-				<h4>Shown in Views</h4>
+				<h4>Views</h4>
 				<table class="table table-hover table-condensed small">
 					<!-- list of views in which the element appears -->
 					<xsl:for-each select="/arc:model/arc:views/arc:view//arc:node[@elementref=$id]/ancestor::arc:view">
@@ -171,14 +172,17 @@
 				</table>
 				<!-- list of relationships of the element -->
 				<xsl:for-each-group select="/arc:model/arc:relationships/arc:relationship[@source=$id]" group-by="//arc:element[@identifier=current()/@target]/@xsi:type">
-					<h4><xsl:value-of select="//arc:element[@identifier=current()/@target]/@xsi:type"/></h4>
+					<h4><xsl:call-template name="elementtype"><xsl:with-param name="type" select="//arc:element[@identifier=current()/@target]/@xsi:type"/></xsl:call-template></h4>
 					<table class="table table-hover table-condensed small"> 
 						<xsl:for-each select="current-group()">
 							<xsl:sort select="@xsi:type"/>
 							<tr>
 								<xsl:variable name="targetid" select="@target"/>
 								<td class="col-md-2">
-									<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;to
+									<xsl:call-template name="relationshiptype">
+										<xsl:with-param name="relationship" select="current()"/>
+										<xsl:with-param name="direction">to</xsl:with-param>
+									</xsl:call-template>
 								</td>
 								<td class="col-md-10">
 									<a href="browsepage-{$targetid}.html"> 
@@ -190,7 +194,7 @@
 					</table>
 				</xsl:for-each-group>
 				<xsl:for-each-group select="/arc:model/arc:relationships/arc:relationship[@target=$id]" group-by="//arc:element[@identifier=current()/@source]/@xsi:type">
-					<h4><xsl:value-of select="//arc:element[@identifier=current()/@source]/@xsi:type"/></h4>
+					<h4><xsl:call-template name="elementtype"><xsl:with-param name="type" select="//arc:element[@identifier=current()/@source]/@xsi:type"/></xsl:call-template></h4>
 					<table class="table table-hover table-condensed small">
 						<xsl:for-each select="current-group()">
 							<xsl:sort select="@xsi:type"/>
@@ -217,11 +221,36 @@
 </xsl:template>
 
 
+<xsl:template name="elementtype">
+	<xsl:param name="type"/>
+	<xsl:choose>
+		<xsl:when test="$config//mapping[@type='element' and @from=$type]">
+			<xsl:value-of select="$config//mapping[@type='element' and @from=$type]/@to"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:value-of select="$type"/>
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+
+<xsl:template name="relationshiptype">
+	<xsl:param name="relationship"/>
+	<xsl:param name="direction"/>
+	<xsl:choose>
+		<xsl:when test="$config//mapping[@type='relationship' and @direction=$direction and @from=$relationship/@xsi:type]">
+			<xsl:value-of select="$config//mapping[@type='relationship' and @direction=$direction and @from=$relationship/@xsi:type]/@to"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;to
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+
 <xsl:template match="arc:view[.//arc:node]">
 	  <xsl:variable name="id" select="@identifier"></xsl:variable>
 	  <div class="panel panel-default root-panel">
 		<div class="panel-heading root-panel-heading">
-			<b><xsl:value-of select="arc:label"/></b>
+			<h4><xsl:value-of select="arc:label"/></h4>
 		</div>
 		<div class="panel-body root-panel-body">
 		<p><xsl:value-of select="arc:documentation"/></p>
