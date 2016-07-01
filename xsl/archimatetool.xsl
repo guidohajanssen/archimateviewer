@@ -35,12 +35,10 @@
 		</arc:model>
 	</xsl:template>
 	
-		<!-- view -->
+	<!-- view -->
 	<xsl:template match="element[@xsi:type='archimate:ArchimateDiagramModel']">
 		<arc:view identifier="{@id}">
-			<arc:label><xsl:value-of select="@name"/></arc:label>
-			<arc:documentation><xsl:value-of select="documentation"/></arc:documentation>
-			<xsl:call-template name="properties"/>
+			<xsl:call-template name="elementbase"/>
 			<xsl:apply-templates select="child"/>
 			<xsl:apply-templates select="child//sourceConnection"/>
 		</arc:view>
@@ -49,22 +47,22 @@
 	<!-- relationship -->
 	<xsl:template match="element[@source]">
 		<arc:relationship identifier="{@id}" xsi:type="{fn:substring-after(@xsi:type,'archimate:')}" source="{@source}" target="{@target}">
-			<arc:label><xsl:value-of select="@name"/></arc:label>
-			<arc:documentation><xsl:value-of select="documentation"/></arc:documentation>
-			<xsl:call-template name="properties"/>
+			<xsl:call-template name="elementbase"/>
 		</arc:relationship>
 	</xsl:template>
 	
 	<!-- element -->
 	<xsl:template match="element">
 		<arc:element identifier="{@id}" xsi:type="{fn:substring-after(@xsi:type,'archimate:')}">
-			<arc:label><xsl:value-of select="@name"/></arc:label>
-			<arc:documentation><xsl:value-of select="documentation"/></arc:documentation>
-			<xsl:call-template name="properties"/>
+			<xsl:call-template name="elementbase"/>
 		</arc:element>
 	</xsl:template>
 	
-
+	<xsl:template name="elementbase">
+		<xsl:if test="@name != ''"><arc:label><xsl:value-of select="@name"/></arc:label></xsl:if>
+		<xsl:if test="arc:documentation != ''"><arc:documentation><xsl:value-of select="documentation"/></arc:documentation></xsl:if>
+		<xsl:call-template name="properties"/>
+	</xsl:template>
 	
 	<xsl:template match="folder">
 		<arc:item>
