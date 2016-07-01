@@ -70,17 +70,7 @@
 						</div>
 						<div class="panel-body root-panel-body">
 							<ul class="tree">
-								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Views']"/>
-					
-								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Business']"/>
-					
-								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Application']"/>
-					
-								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Technology']"/>
-								
-								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Motivation']"/>
-								
-								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label='Implementation &amp; Migration']"/>
+								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label]"/>
 							</ul>
 						</div>
 					</div>
@@ -123,7 +113,24 @@
 					<xsl:sort select="//*[@identifier=current()/@identifierref]/arc:label"/>
 					<li class="tree-element">
 						<a href="browsepage-{@identifierref}.html" target="contents">
-							<xsl:value-of select="//*[@identifier=current()/@identifierref]/arc:label"/>
+							<xsl:choose>
+								<xsl:when test="//arc:element[@identifier=current()/@identifierref]">
+									<xsl:value-of select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
+								</xsl:when>
+								<xsl:when test="//arc:relationship[@identifier=current()/@identifierref]">
+									<xsl:variable name="relationship" select="//arc:relationship[@identifier=current()/@identifierref]"/>
+									<xsl:choose>
+										<xsl:when test="$relationship/arc:label">
+											<xsl:value-of select="$relationship/arc:label"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="$relationship/@xsi:type"/>
+										</xsl:otherwise>
+									</xsl:choose>
+									<xsl:value-of select="//arc:element[@identifier=$relationship/@source]/arc:label"/>-
+									<xsl:value-of select="//arc:element[@identifier=$relationship/@target]/arc:label"/>
+								</xsl:when>
+							</xsl:choose>
 						</a>
 					</li>
 				</xsl:for-each>
