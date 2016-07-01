@@ -268,7 +268,6 @@
 							<path d="M2,2 L9,6 L2,10 Z" style="fill: black; stroke: black; stroke-width:1" />
 						</marker>
 					</defs>
-					
 					<xsl:apply-templates select="arc:node"/>
 					<xsl:for-each select="arc:connection">
 						 <xsl:call-template name="svgconnection"/>
@@ -308,25 +307,39 @@
 		<xsl:when test="@elementref">	
 			<a xlink:href="browsepage-{@elementref}.html">
 				<xsl:choose>
-					<xsl:when test="$element/@xsi:type='BusinessProcess' or $element/@xsi:type='BusinessInteraction' or $element/@xsi:type='BusinessFunction'">
+					<xsl:when test="$element/@xsi:type='BusinessProcess' or $element/@xsi:type='BusinessInteraction' or $element/@xsi:type='BusinessFunction' or 
+							$element/@xsi:type='BusinessService' or $element/@xsi:type='ApplicationService' or $element/@xsi:type='InfrastructureService' or 
+							$element/@xsi:type='BusinessFunction' or $element/@xsi:type='ApplicationFunction' or $element/@xsi:type='InfrastructureFunction' or
+							$element/@xsi:type='BusinessEvent' or $element/@xsi:type='BusinessProcess'">
 						<rect x="{$x1}" y="{$y1}" rx="10" ry="10" width="{$w}" height="{$h}" style="{$svg_style}"/>
 					</xsl:when>
-					<xsl:when test="$element/@xsi:type='BusinessService' or $element/@xsi:type='ApplicationService' or $element/@xsi:type='InfrastructureService'">
-						<rect x="{$x1}" y="{$y1}" rx="15" ry="{$h}" width="{$w}" height="{$h}" style="{$svg_style}"/>
+					<xsl:when test="$element/@xsi:type='Value'">
+						<!-- need to set width for text wrapping -->
+						<ellipse cx="{$x1+$w div 2}" cy="{$y1+$h div 2}" width="{$w}" rx="{$w div 2}" ry="{$h div 2}" style="{$svg_style}"/> 
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='Product'">
+						<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}"/>
+						<!-- need to set width for text wrapping -->
+						<path d="M{$x1},{$y1+6} h{$w div 2} v-6" width="{$w}" style="{$svg_style}"/>
+					</xsl:when>
+					<xsl:when test="$element/@xsi:type='DataObject' or $element/@xsi:type='BusinessObject'">
+						<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}"/>
+						<!-- need to set width for text wrapping -->
+						<line x1="{$x1}" y1="{$y1+6}" x2="{$x2}" y2="{$y1+6}" width="{$w}" style="{$svg_style}"/> 
 					</xsl:when>
 					<xsl:otherwise>
 						<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}"/>
 					</xsl:otherwise>
 				</xsl:choose>
 				
-				<text text-anchor="middle" x="{$x1+5}" y="{$y1+5}" width="{$w+-60}" font-size="12"><xsl:value-of select="$element/arc:label"/></text>
+				<text text-anchor="middle" x="{$x1+5}" y="{$y1+8}" width="{$w+-60}" font-size="12"><xsl:value-of select="$element/arc:label"/></text>
 				<xsl:choose>
 					<xsl:when test="$element/@xsi:type='SystemSoftware'">
 						<circle cx="{$x2+-10}" cy="{$y1+10}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
 						<circle cx="{$x2+-12}" cy="{$y1+12}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='Node'">
-						<path d="M{$x2+-18},{$y1+8} L{$x2+-15},{$y1+5} L{$x2+-5},{$y1+5} L{$x2+-5},{$y1+15} L{$x2+-8},{$y1+18}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
+						<path d="M{$x2 - 18},{$y1 + 8} L{$x2 - 15},{$y1 + 5} h10 v10 L{$x2+-8},{$y1+18}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 						<line x1="{$x2+-5}" y1="{$y1+5}" x2="{$x2+-8}" y2="{$y1+8}" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 						<rect x="{$x2+-18}" y="{$y1+8}" width="10" height="10" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
@@ -338,10 +351,6 @@
 						<rect x="{$x2+-15}" y="{$y1+5}" width="10" height="14" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 						<rect x="{$x2+-18}" y="{$y1+7}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 						<rect x="{$x2+-18}" y="{$y1+13}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-					</xsl:when>
-					<xsl:when test="$element/@xsi:type='Product'">
-						<rect x="{$x2+-18}" y="{$y1+5}" width="12" height="10" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-						<rect x="{$x2+-18}" y="{$y1+5}" width="6" height="3" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='BusinessRole' or $element/@xsi:type='Stakeholder'">
 						<circle cx="{$x2+-17}" cy="{$y1+10}" r="4" fill="{$fillColor}" stroke="black" stroke-width="1"/>
@@ -360,7 +369,7 @@
 					<xsl:when test="$element/@xsi:type='BusinessProcess'">
 						<path d="M{$x2 - 18},{$y1+8} h9 v-3 L{$x2 - 5},{$y1+10} L{$x2 - 9},{$y1+15} v-3 h-9 Z" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
-					<xsl:when test="$element/@xsi:type='BusinessObject' or $element/@xsi:type='DataObject' or $element/@xsi:type='Contract'">
+					<xsl:when test="$element/@xsi:type='Contract'">
 						<rect x="{$x2 - 18}" y="{$y1+5}" width="12" height="10" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 						<path d="M{$x2 - 18},{$y1+8} h12" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
 					</xsl:when>
@@ -373,7 +382,7 @@
 						<circle cx="{$x2 - 10}" cy="{$y1+11}" r="5" fill="none" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='BusinessInterface' or $element/@xsi:type='ApplicationInterface' or $element/@xsi:type='InfrastructureInterface'">
-						<circle cx="{$x2 - 8}" cy="{$y1+10}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
+						<circle cx="{$x2 - 8}" cy="{$y1+10}" r="4" fill="{$fillColor}" stroke="black" stroke-width="1"/> 
 						<path d="M{$x2 - 13},{$y1+10} h-5" fill="none" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='BusinessFunction' or $element/@xsi:type='ApplicationFunction' or $element/@xsi:type='InfrastructureFunction'">
@@ -381,9 +390,6 @@
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='BusinessService' or $element/@xsi:type='ApplicationService' or $element/@xsi:type='InfrastructureService'">
 						<rect x="{$x2 - 22}" y="{$y1+5}" rx="3" ry="3" width="13" height="7" fill="{$fillColor}" stroke="black" stroke-width="0.75"/> 
-					</xsl:when>
-					<xsl:when test="$element/@xsi:type='Value'">
-						<ellipse cx="{$x2 - 13}" cy="{$y1+10}" rx="8" ry="4" fill="none" stroke="black" stroke-width="1"/> 
 					</xsl:when>
 					<xsl:when test="$element/@xsi:type='Meaning'">
 						
