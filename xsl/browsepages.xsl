@@ -277,8 +277,8 @@
 </xsl:template>		
 
 <xsl:template match="arc:node">
-	
-	<xsl:variable name="element" select="//arc:element[@identifier=current()/@elementref]"/>
+	<!-- include here also views since we could have a reference to a view in some tools -->
+	<xsl:variable name="element" select="//arc:*[@identifier=current()/@elementref]"/>
 	<xsl:variable name="statuspropid" select="//arc:propertydef[@name='Status']/@identifier"/>
 	<xsl:variable name="fillColor">
 		<xsl:choose>
@@ -302,11 +302,10 @@
 	<xsl:variable name="strokeColor" select="concat('rgb(', $svg_stroke_r, ',', $svg_stroke_g, ',', $svg_stroke_b, ')')"/>
 	<xsl:variable name="svg_style" select="concat('fill:', $fillColor, '; stroke-width:1;', 'stroke:', $strokeColor, ';')"/>
 	<xsl:choose>
-		<xsl:when test="@elementref">		
-			<xsl:variable name="svg_text" select="$element/arc:label"/>
+		<xsl:when test="@elementref">	
 			<a xlink:href="browsepage-{@elementref}.html">
 				<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svg_style}"></rect>
-				<text text-anchor="middle" x="{$x1+5}" y="{$y1+5}" width="{$w+-60}" font-size="12"><xsl:value-of select="$svg_text"/></text>
+				<text text-anchor="middle" x="{$x1+5}" y="{$y1+5}" width="{$w+-60}" font-size="12"><xsl:value-of select="$element/arc:label"/></text>
 				<xsl:choose>
 					<xsl:when test="$element/@xsi:type='SystemSoftware'">
 						<circle cx="{$x2+-10}" cy="{$y1+10}" r="5" fill="{$fillColor}" stroke="black" stroke-width="1"/> 

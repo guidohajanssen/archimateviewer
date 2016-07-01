@@ -3,8 +3,8 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:arc="http://www.opengroup.org/xsd/archimate"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns:fn="http://www.w3.org/2005/xpath-functions"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:fn="http://www.w3.org/2005/xpath-functions"
 	>
 
 	<xsl:output method="xml" indent="yes"/>
@@ -93,6 +93,11 @@
 			<xsl:choose>
 				<xsl:when test="@archimateElement">
 					<xsl:attribute name="elementref"><xsl:value-of select="@archimateElement"/></xsl:attribute>
+				</xsl:when>
+				<!-- Since it doesn't seem to be forbidden, we just assume we can use the elementref for views in views -->
+				<xsl:when test="@model">
+					<xsl:attribute name="elementref"><xsl:value-of select="@model"/></xsl:attribute>
+					<xsl:attribute name="type">model</xsl:attribute>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:attribute name="type">group</xsl:attribute>
