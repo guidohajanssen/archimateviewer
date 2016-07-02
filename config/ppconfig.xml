@@ -1,0 +1,10 @@
+<mappings>
+    <mapping type="element" from="Node" to="Environment"/>
+    <mapping type="element" from="ApplicationComponent" to="Application"/>
+    <mapping type="element" from="SystemSoftware" to="Middleware/OS"/>
+    <mapping type="element" from="Device" to="Virtual Machine"/>
+    <mapping type="relationship" direction="to" from="AssociationRelationship" to="Relates to" />
+    <mapping type="relationship" direction="to" from="FlowRelationship" to="Flows to" />
+    <mapping type="relationship" direction="to" from="TriggeringRelationship" to="Triggers" />
+    <mapping type="relationship" direction="form" from="TriggeringRelationship" to="Is triggered by" />
+</mappings>

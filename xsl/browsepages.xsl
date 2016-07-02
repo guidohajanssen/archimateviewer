@@ -124,7 +124,6 @@
 						</xsl:for-each>
 					</table>
 				<!--/xsl:for-each-group-->
-			
 			</div>
 		</div>
 	</div>
@@ -158,6 +157,7 @@
 						</tr>
 					</xsl:for-each>
 				</table>
+                <!-- TODO for browsing create a tabbed view / for reporting the list view -->
 				<h4>Views</h4>
 				<table class="table table-hover table-condensed small">
 					<!-- list of views in which the element appears -->
@@ -201,7 +201,10 @@
 							<tr>
 								<xsl:variable name="sourceid" select="@source"/>
 								<td class="col-md-2">
-									<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;from
+                                    <xsl:call-template name="relationshiptype">
+                                        <xsl:with-param name="relationship" select="current()"/>
+                                        <xsl:with-param name="direction">from</xsl:with-param>
+                                    </xsl:call-template>
 								</td>
 								<td class="col-md-10">
 									<a href="browsepage-{$sourceid}.html">
@@ -214,18 +217,15 @@
 				</xsl:for-each-group>
 			</div>
 		</div>
-		<div class="col-md-6">
-		</div>
 	</div>
-	
 </xsl:template>
 
-
+<!-- template for creating an alias for the element type -->
 <xsl:template name="elementtype">
 	<xsl:param name="type"/>
 	<xsl:choose>
-		<xsl:when test="$config//mapping[@type='element' and @from=$type]">
-			<xsl:value-of select="$config//mapping[@type='element' and @from=$type]/@to"/>
+		<xsl:when test="$config//elementmapping[@type=$type]">
+			<xsl:value-of select="$config//elementmapping[@type=$type]/@nounAlias"/>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:value-of select="$type"/>
@@ -233,12 +233,14 @@
 	</xsl:choose>
 </xsl:template>
 
+
+<!-- template for creating an alias for the relationship type -->
 <xsl:template name="relationshiptype">
 	<xsl:param name="relationship"/>
 	<xsl:param name="direction"/>
 	<xsl:choose>
-		<xsl:when test="$config//mapping[@type='relationship' and @direction=$direction and @from=$relationship/@xsi:type]">
-			<xsl:value-of select="$config//mapping[@type='relationship' and @direction=$direction and @from=$relationship/@xsi:type]/@to"/>
+		<xsl:when test="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction]">
+			<xsl:value-of select="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction]/@verbAlias"/>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;to
@@ -297,7 +299,9 @@
 							<path d="M2,2 L9,6 L2,10 Z" style="fill: black; stroke: black; stroke-width:1" />
 						</marker>
 					</defs>
+                    <!-- create all the nodes -->
 					<xsl:apply-templates select="arc:node"/>
+                    <!-- create all the connections -->
 					<xsl:for-each select="arc:connection">
 						 <xsl:call-template name="svgconnection"/>
 					</xsl:for-each>
@@ -499,12 +503,12 @@
 	<xsl:variable name="targetw" select="number($targetnode/@w)"></xsl:variable>
 	<xsl:variable name="targeth" select="number($targetnode/@h)"></xsl:variable>
 	
-	<!-- TODO include support for more bendpoints -->
 	<xsl:variable name="bendpoint">
 		<xsl:for-each select="arc:bendpoint">
 			L<xsl:value-of select="@x"/>,<xsl:value-of select="@y"/>
 		</xsl:for-each>
 	</xsl:variable>
+    <!-- select the start shape of the connection -->
 	<xsl:variable name="markerstart">
 		<xsl:choose>
 			<xsl:when test="$relationship/@xsi:type='AssignmentRelationship'">marker-start: url(#markerCircleStart);</xsl:when>
@@ -512,6 +516,7 @@
 			<xsl:when test="$relationship/@xsi:type='CompositionRelationship'">marker-start: url(#markerClosedDiamond);</xsl:when>
 		</xsl:choose>
 	</xsl:variable>
+    <!-- select the end shape of the connection -->
 	<xsl:variable name="markerend">
 		<xsl:choose>
 			<xsl:when test="$relationship/@xsi:type='UsedByRelationship'">marker-end: url(#markerOpenArrow);</xsl:when>
@@ -524,26 +529,29 @@
 			<xsl:when test="$relationship/@xsi:type='InfluenceRelationship'">marker-end: url(#markerClosedArrow);</xsl:when>
 		</xsl:choose>
 	</xsl:variable>
+    <!-- select the line dash if necessary -->
 	<xsl:variable name="dash">
-	        
 		<xsl:choose>
 			<xsl:when test="$relationship/@xsi:type='AccessRelationship'">stroke-dasharray:3,3;</xsl:when>
 			<xsl:when test="$relationship/@xsi:type='RealisationRelationship'">stroke-dasharray:5,3;</xsl:when>
 			<xsl:when test="$relationship/@xsi:type='FlowRelationship'">stroke-dasharray:5,3;</xsl:when>
 		</xsl:choose>
 	</xsl:variable>
+    <!-- the second point of the connection as a rectangle. If no bendpoints are defined this is the target node -->
 	<xsl:variable name="next">
 		<xsl:choose>
 			<xsl:when test="arc:bendpoint"><rect x="{number(arc:bendpoint[1]/@x)}" y="{number(arc:bendpoint[1]/@y)}" w="0" h="0"/></xsl:when>
 			<xsl:otherwise><rect x="{$targetx}" y="{$targety}" w="{$targetw}" h="{$targeth}"/></xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
+    <!-- the 2nd last point of the connection as a rectangle. If no bendpoints are defined this is the soure node -->
 	<xsl:variable name="previous">
 		<xsl:choose>
 			<xsl:when test="arc:bendpoint"><rect x="{number(arc:bendpoint[position()=last()]/@x)}" y="{number(arc:bendpoint[position()=last()]/@y)}" w="0" h="0"/></xsl:when>
 			<xsl:otherwise><rect x="{$sourcex}" y="{$sourcey}" w="{$sourcew}" h="{$sourceh}"/></xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
+    <!-- the x coordinate of the start point of the connection -->
 	<xsl:variable name="startx">
 		<xsl:choose>
 			<xsl:when test="$sourcex+$sourcew &lt;= $next/rect/@x"><xsl:value-of select="$sourcex+$sourcew"/></xsl:when>

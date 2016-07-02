@@ -1,0 +1,8 @@
+<mappings>
+    <elementmapping type="ApplicationComponent" nounAlias="Application Component"/>
+    <elementmapping type="SystemSoftware" nounAlias="System Software"/>
+    <relationshipmapping type="AssociationRelationship" direction="to" verbAlias="Relates to" />
+    <relationshipmapping type="AssignmentRelationship" direction="to" verbAlias="Is assigned to" />
+    <relationshipmapping type="FlowRelationship" direction="to" verbAlias="Flows to" />
+    <relationshipmapping type="FlowRelationship" direction="from" verbAlias="Flows from" />
+</mappings>
