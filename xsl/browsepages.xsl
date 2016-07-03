@@ -165,7 +165,7 @@
                 <!-- Create the structure for both the report and browse parts -->
                 <xsl:variable name="relationships">
                         <relationships>
-                            <type name="Viewz">
+                            <type name="Views">
                                 <xsl:for-each select="/arc:model/arc:views/arc:view//arc:node[@elementref=$id]/ancestor::arc:view">
                                     <element id="{@identifier}" name="{arc:label}"/>
                                 </xsl:for-each>
