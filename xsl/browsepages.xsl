@@ -37,10 +37,36 @@
 					<!-- REPORT SPECIFIC -->
 					<link type="text/css" rel="stylesheet" href="css/model.css"/>
 					<script type="text/javascript" src="js/browse.js"></script>
+                    <style>
+                        ul
+                        {
+                            list-style-type: none;
+                        }
+                        th.rotate {
+                        /* Something you can count on */
+                        height: 140px;
+                        white-space: nowrap;
+                        }
+                        
+                        th.rotate > div {
+                        transform:
+                        /* Magic Numbers */
+                        translate(16px, 50px)
+                        /* 45 is really 360 - 45 */
+                        rotate(315deg);
+                        width: 30px;
+                        }
+                        th.rotate > div > span {
+                        border-bottom: 1px solid #ccc;
+                        padding: 5px 10px;
+                        }
+                        
+                     
+                    </style>
 				</head>
 				<body>
 					<div class="ui-layout-center">
-						<xsl:apply-templates select="."/>	
+						<xsl:apply-templates select="."/>
 					</div>
 				</body>
 			</html>
@@ -58,24 +84,31 @@
 		</div>
 		<div class="panel-body root-panel-body">
 			<div class="col-md-12">
-				<table class="table table-condensed table-bordered">
+				 <table>
+                    <thead>
 					<tr>
-						<td/>
+						<th/>
 						<xsl:for-each select="/arc:model/arc:organization//arc:item[arc:label=$xfolder]//arc:item[@identifierref]">
 							<xsl:variable name="columnid" select="@identifierref"/>
-							<td class="text-left"><xsl:value-of select="//arc:element[@identifier=$columnid]/arc:label"/></td>
+							<th class="rotate"><div><span><xsl:value-of select="//arc:element[@identifier=$columnid]/arc:label"/></span></div></th>
 						</xsl:for-each>
 					</tr>
+                    </thead>
+                    <tbody>
 					<xsl:for-each select="/arc:model/arc:organization//arc:item[arc:label=$yfolder]//arc:item[@identifierref]">
 						<xsl:variable name="rowid" select="@identifierref"/>
 						<tr>
-							<td><xsl:value-of select="//arc:element[@identifier=$rowid]/arc:label"/></td>
+							<td style="border-bottom: 1px solid #ccc;"><xsl:value-of select="//arc:element[@identifier=$rowid]/arc:label"/></td>
 							<xsl:for-each select="/arc:model/arc:organization//arc:item[arc:label=$xfolder]//arc:item[@identifierref]">
 								<xsl:variable name="columnid" select="@identifierref"/>
-								<td class="text-center"><xsl:if test="//arc:relationship[@source=$rowid and @target=$columnid]">X</xsl:if><xsl:if test="//arc:relationship[@target=$rowid and @source=$columnid]">X</xsl:if></td>
+								<td class="text-center" style="border:1px solid #ccc; width:30px padding: 5px 10px;">
+                                    <xsl:if test="//arc:relationship[@source=$rowid and @target=$columnid]"><i class="glyphicon glyphicon-ok"/></xsl:if>
+                                    <xsl:if test="//arc:relationship[@target=$rowid and @source=$columnid]"><i class="glyphicon glyphicon-ok"/></xsl:if>
+                                </td>
 							</xsl:for-each>
 						</tr>
 					</xsl:for-each>
+                    </tbody>
 				</table>
 			</div>
 		</div>
@@ -214,8 +247,8 @@
                                     <td class="col-md-10">
                                         <a href="browsepage-{@id}.html"><xsl:value-of select="@name"/></a>
                                     </td>
-                                    <td><xsl:value-of select="elementDocumentation"/></td>
-                                    <td><xsl:value-of select="documentation"/></td>
+                                    <td class="documentation"><xsl:value-of select="elementDocumentation"/></td>
+                                    <td class="documentation"><xsl:value-of select="documentation"/></td>
                                 </tr>
                             </xsl:for-each>
                         </table>
@@ -243,8 +276,8 @@
                                             <td>
                                                 <a href="browsepage-{@id}.html"><xsl:value-of select="@name"/></a>
                                             </td>
-                                            <td><xsl:value-of select="elementDocumentation"/></td>
-                                            <td><xsl:value-of select="documentation"/></td>
+                                            <td class="documentation"><xsl:value-of select="elementDocumentation"/></td>
+                                            <td class="documentation"><xsl:value-of select="documentation"/></td>
                                         </tr>
                                     </xsl:for-each>
                                 </table>
