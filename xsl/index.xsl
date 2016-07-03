@@ -112,7 +112,7 @@
 				<xsl:for-each select="arc:item[@identifierref]">
 					<xsl:sort select="//*[@identifier=current()/@identifierref]/arc:label"/>
 					<li class="tree-element">
-						<a href="browsepage-{@identifierref}.html" target="contents">
+						<a href="browsepage-{@identifierref}.html?style=tabbed" target="contents">
 							<xsl:choose>
 								<xsl:when test="//arc:element[@identifier=current()/@identifierref]">
 									<xsl:value-of select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
