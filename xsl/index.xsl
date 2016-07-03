@@ -70,7 +70,7 @@
 						</div>
 						<div class="panel-body root-panel-body">
 							<ul class="tree">
-								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label]"/>
+								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label and arc:item]"/>
 							</ul>
 						</div>
 					</div>
@@ -105,7 +105,7 @@
 	<xsl:template match="arc:item[arc:label]">
 		<li class="tree-folder"><span><i class="glyphicon glyphicon-triangle-right"></i><xsl:value-of select="arc:label"/></span>
 			<ul>
-				<xsl:for-each select="arc:item[arc:label]">
+				<xsl:for-each select="arc:item[arc:label and arc:item]">
 					<xsl:sort select="arc:label"/>		
 					<xsl:apply-templates select="."/>		
 				</xsl:for-each>
