@@ -60,7 +60,7 @@
 	
 	<xsl:template name="elementbase">
 		<xsl:if test="@name != ''"><arc:label><xsl:value-of select="@name"/></arc:label></xsl:if>
-		<xsl:if test="arc:documentation != ''"><arc:documentation><xsl:value-of select="documentation"/></arc:documentation></xsl:if>
+		<xsl:if test="documentation != ''"><arc:documentation><xsl:value-of select="documentation"/></arc:documentation></xsl:if>
 		<xsl:call-template name="properties"/>
 	</xsl:template>
 	
