@@ -158,7 +158,7 @@
 					</xsl:for-each>
 				</table>
                 <!-- TODO for browsing create a tabbed view / for reporting the list view -->
-				<h4>Views</h4>
+				<h5>Views</h5>
 				<table class="table table-hover table-condensed small">
 					<!-- list of views in which the element appears -->
 					<xsl:for-each select="/arc:model/arc:views/arc:view//arc:node[@elementref=$id]/ancestor::arc:view">
@@ -171,49 +171,42 @@
 					</xsl:for-each>
 				</table>
 				<!-- list of relationships of the element -->
-				<xsl:for-each-group select="/arc:model/arc:relationships/arc:relationship[@source=$id]" group-by="//arc:element[@identifier=current()/@target]/@xsi:type">
-					<h4><xsl:call-template name="elementtype"><xsl:with-param name="type" select="//arc:element[@identifier=current()/@target]/@xsi:type"/></xsl:call-template></h4>
-					<table class="table table-hover table-condensed small"> 
-						<xsl:for-each select="current-group()">
-							<xsl:sort select="@xsi:type"/>
-							<tr>
-								<xsl:variable name="targetid" select="@target"/>
-								<td class="col-md-2">
-									<xsl:call-template name="relationshiptype">
-										<xsl:with-param name="relationship" select="current()"/>
-										<xsl:with-param name="direction">to</xsl:with-param>
-									</xsl:call-template>
-								</td>
-								<td class="col-md-10">
-									<a href="browsepage-{$targetid}.html"> 
-										<xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$targetid]/arc:label"/>
-									</a>
-								</td>
-							</tr>
-						</xsl:for-each>
-					</table>
-				</xsl:for-each-group>
-				<xsl:for-each-group select="/arc:model/arc:relationships/arc:relationship[@target=$id]" group-by="//arc:element[@identifier=current()/@source]/@xsi:type">
-					<h4><xsl:call-template name="elementtype"><xsl:with-param name="type" select="//arc:element[@identifier=current()/@source]/@xsi:type"/></xsl:call-template></h4>
-					<table class="table table-hover table-condensed small">
-						<xsl:for-each select="current-group()">
-							<xsl:sort select="@xsi:type"/>
-							<tr>
-								<xsl:variable name="sourceid" select="@source"/>
-								<td class="col-md-2">
-                                    <xsl:call-template name="relationshiptype">
-                                        <xsl:with-param name="relationship" select="current()"/>
-                                        <xsl:with-param name="direction">from</xsl:with-param>
-                                    </xsl:call-template>
-								</td>
-								<td class="col-md-10">
-									<a href="browsepage-{$sourceid}.html">
-										<xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$sourceid]/arc:label"/>
-									</a>
-								</td>
-							</tr>
-						</xsl:for-each>
-					</table>
+				<xsl:for-each-group select="/arc:model/arc:relationships/arc:relationship[@source=$id or @target=$id]"
+                        group-by="//arc:element[(@identifier=current()/@target and current()/@source=$id) or (@identifier=current()/@source and current()/@target=$id)]/@xsi:type">
+					<xsl:for-each-group select="current-group()" group-by="@xsi:type">
+                        <xsl:for-each-group select="current-group()" group-by="@source=$id">
+                        <h5>
+                            <xsl:call-template name="relationshiptype">
+                                <xsl:with-param name="relationship" select="current()"/>
+                                <xsl:with-param name="direction">
+                                    <xsl:choose>
+                                        <xsl:when test="@source=$id">to</xsl:when>
+                                        <xsl:otherwise>from</xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:with-param>
+                            </xsl:call-template>
+                        </h5>
+                        <table class="table table-hover table-condensed small">
+                            <xsl:for-each select="current-group()">
+                                <tr>
+                                    <xsl:variable name="elementRef">
+                                        <xsl:choose>
+                                            <xsl:when test="@source=$id"><xsl:value-of select="@target"/></xsl:when>
+                                            <xsl:otherwise><xsl:value-of select="@source"/></xsl:otherwise>
+                                        </xsl:choose>
+                                    </xsl:variable>
+                                    <td class="col-md-10">
+                                        <a href="browsepage-{$elementRef}.html">
+                                            <xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$elementRef]/arc:label"/>
+                                        </a>
+                                    </td>
+                                    <td><xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$elementRef]/arc:documentation"/></td>
+                                    <td><xsl:value-of select="arc:documentation"/></td>
+                                </tr>
+                            </xsl:for-each>
+                        </table>
+                    </xsl:for-each-group>
+                    </xsl:for-each-group>
 				</xsl:for-each-group>
 			</div>
 		</div>
@@ -225,7 +218,7 @@
 	<xsl:param name="type"/>
 	<xsl:choose>
 		<xsl:when test="$config//elementmapping[@type=$type]">
-			<xsl:value-of select="$config//elementmapping[@type=$type]/@nounAlias"/>
+			<xsl:value-of select="$config//elementmapping[@type=$type]/@alias"/>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:value-of select="$type"/>
@@ -238,12 +231,35 @@
 <xsl:template name="relationshiptype">
 	<xsl:param name="relationship"/>
 	<xsl:param name="direction"/>
+    <xsl:variable name="sourceElementType" select="//arc:element[@identifier=$relationship/@source]/@xsi:type"/>
+    <xsl:variable name="targetElementType" select="//arc:element[@identifier=$relationship/@target]/@xsi:type"/>
 	<xsl:choose>
-		<xsl:when test="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction]">
-			<xsl:value-of select="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction]/@verbAlias"/>
+		<xsl:when test="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction and @sourceType=$sourceElementType and @targetType=$targetElementType]">
+			<xsl:value-of select="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction and @sourceType=$sourceElementType and @targetType=$targetElementType]/@alias"/>
 		</xsl:when>
+        <xsl:when test="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction and @sourceType='any' and @targetType='any']">
+            <xsl:value-of select="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction and @sourceType='any' and @targetType='any']/@alias"/>
+            &#160;
+            <xsl:call-template name="elementtype">
+                <xsl:with-param name="type">
+                    <xsl:choose>
+                        <xsl:when test="$direction='to'"><xsl:value-of select="$targetElementType"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="$sourceElementType"/></xsl:otherwise>
+                    </xsl:choose>
+                </xsl:with-param>
+            </xsl:call-template>
+        </xsl:when>
 		<xsl:otherwise>
-			<xsl:value-of select="fn:substring-before(@xsi:type,'Relationship')"/>&#160;to
+            <xsl:value-of select="fn:substring-before($relationship/@xsi:type,'Relationship')"/>
+            &#160;<xsl:value-of select="$direction"/>&#160;
+            <xsl:call-template name="elementtype">
+                <xsl:with-param name="type">
+                    <xsl:choose>
+                        <xsl:when test="$direction='to'"><xsl:value-of select="$targetElementType"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="$sourceElementType"/></xsl:otherwise>
+                    </xsl:choose>
+                </xsl:with-param>
+            </xsl:call-template>
 		</xsl:otherwise>
 	</xsl:choose>
 </xsl:template>
