@@ -1,6 +1,10 @@
+<configuration>
 <mappings>
     <elementmapping type="ApplicationComponent" alias="Application Component"/>
     <elementmapping type="SystemSoftware" alias="System Software"/>
+    <elementmapping type="BusinessActor" alias="Business Actor"/>
+    <elementmapping type="BusinessRole" alias="Business Role"/>
+    <elementmapping type="BusinessEvent" alias="Business Event"/>
     <relationshipmapping sourceType="any" targetType="any" type="AssociationRelationship" direction="to" alias="Relates to" />
     <relationshipmapping sourceType="any" targetType="any" type="AssociationRelationship" direction="from" alias="Relates to" />
     <relationshipmapping sourceType="any" targetType="any" type="AssignmentRelationship" direction="to" alias="Is assigned to" />
@@ -9,3 +13,22 @@
     <relationshipmapping sourceType="any" targetType="any" type="UsedByRelationship" direction="to" alias="Used by"/>
     <relationshipmapping sourceType="any" targetType="any" type="UsedByRelationship" direction="from" alias="Uses"/>
 </mappings>
+<nodestyle type="element">
+    <elementcondition type="any">
+        <propertycondition name="Status" value="Discontinued"/>
+    </elementcondition>
+    <fillColor>#d9534f</fillColor>
+</nodestyle>
+<nodestyle type="element">
+    <elementcondition type="any">
+        <propertycondition name="Status" value="Upgrade"/>
+    </elementcondition>
+    <fillColor>#f0ad4e</fillColor>
+</nodestyle>
+<nodestyle type="element">
+    <elementcondition type="any">
+        <propertycondition name="Inactive" value=""/>
+    </elementcondition>
+    <fillColor>#999999</fillColor>
+</nodestyle>
+</configuration>

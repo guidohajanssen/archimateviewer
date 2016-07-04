@@ -408,11 +408,17 @@
 	<!-- include here also views since we could have a reference to a view in some tools -->
 	<xsl:variable name="element" select="//arc:*[@identifier=current()/@elementref]"/>
 	<xsl:variable name="statuspropid" select="//arc:propertydef[@name='Status']/@identifier"/>
+    <xsl:variable name="properties">
+        <properties>
+            <xsl:for-each select="$element//arc:property">
+                    <property name="{//arc:propertydef[@identifier=current()/@identifierref]/@name}" value="{arc:value}"/>
+            </xsl:for-each>
+        </properties>
+    </xsl:variable>
+    <xsl:variable name="overrideNodeStyle" select="$config//nodestyle[elementcondition[type=element/@xsi:type or @type='any']/propertycondition[@name=$properties//property/@name and @value=$properties//property/@value]]"/>
 	<xsl:variable name="fillColor">
 		<xsl:choose>
-			<xsl:when test="$element//arc:property[@identifierref=$statuspropid and arc:value='Future']">#5cb85c</xsl:when>
-			<xsl:when test="$element//arc:property[@identifierref=$statuspropid and arc:value='Discontinued']">#d9534f</xsl:when>
-			<xsl:when test="$element//arc:property[@identifierref=$statuspropid and arc:value='Upgrade']">#f0ad4e</xsl:when>
+            <xsl:when test="$overrideNodeStyle"><xsl:value-of select="$overrideNodeStyle/fillColor"/></xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="concat('rgb(', arc:style/arc:fillColor/@r, ',', arc:style/arc:fillColor/@g, ',', arc:style/arc:fillColor/@b, ')')"/>
 			</xsl:otherwise>
