@@ -60,8 +60,16 @@
                         border-bottom: 1px solid #ccc;
                         padding: 5px 10px;
                         }
-                        
-                     
+                        .panel-heading-danger > .panel-heading {
+                            background: #d9534f;
+                            color: #ffffff;
+                            border-color: #d9534f;
+                        }
+                        .panel-heading-warning > .panel-heading {
+                            background: #f0ad4e;
+                            color: #ffffff;
+                            border-color: #f0ad4e;
+                        }
                     </style>
 				</head>
 				<body>
@@ -166,7 +174,18 @@
 <xsl:template match="arc:element">
 	<xsl:variable name="type" select="@xsi:type"/>
 	<xsl:variable name="id" select="@identifier"/>
-	<div class="panel panel-default root-panel">
+    <xsl:variable name="element" select="current()"/>
+    <xsl:variable name="properties">
+        <properties>
+            <xsl:for-each select="$element//arc:property">
+                <property name="{//arc:propertydef[@identifier=current()/@identifierref]/@name}" value="{arc:value}"/>
+            </xsl:for-each>
+        </properties>
+    </xsl:variable>
+   
+    <xsl:variable name="overrideElementStyle" select="$config//elementstyle[elementcondition[type=$element/@xsi:type or @type='any']/propertycondition[@name=$properties//property/@name and @value=$properties//property/@value]]"/>
+     <xsl:variable name="class" select="$overrideElementStyle//class"/>
+     <div class="panel panel-default root-panel {$class}">
 		<div class="panel-heading root-panel-heading">
             <h4>
                 <xsl:call-template name="elementtype"><xsl:with-param name="type" select="@xsi:type"/></xsl:call-template>
@@ -244,7 +263,7 @@
                         <table class="table table-hover table-condensed small">
                             <xsl:for-each select="element">
                                 <tr>
-                                    <td class="col-md-10">
+                                    <td>
                                         <a href="browsepage-{@id}.html"><xsl:value-of select="@name"/></a>
                                     </td>
                                     <td class="documentation"><xsl:value-of select="elementDocumentation"/></td>
@@ -404,6 +423,8 @@
 	</div>
 </xsl:template>		
 
+
+
 <xsl:template match="arc:node">
 	<!-- include here also views since we could have a reference to a view in some tools -->
 	<xsl:variable name="element" select="//arc:*[@identifier=current()/@elementref]"/>
@@ -415,7 +436,7 @@
             </xsl:for-each>
         </properties>
     </xsl:variable>
-    <xsl:variable name="overrideNodeStyle" select="$config//nodestyle[elementcondition[type=element/@xsi:type or @type='any']/propertycondition[@name=$properties//property/@name and @value=$properties//property/@value]]"/>
+    <xsl:variable name="overrideNodeStyle" select="$config//nodestyle[elementcondition[type=$element/@xsi:type or @type='any']/propertycondition[@name=$properties//property/@name and @value=$properties//property/@value]]"/>
 	<xsl:variable name="fillColor">
 		<xsl:choose>
             <xsl:when test="$overrideNodeStyle"><xsl:value-of select="$overrideNodeStyle/fillColor"/></xsl:when>
