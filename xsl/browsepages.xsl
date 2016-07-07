@@ -38,30 +38,8 @@
 					<link type="text/css" rel="stylesheet" href="css/model.css"/>
 					<script type="text/javascript" src="js/browse.js"></script>
                     <style>
-                        ul
-                        {
-                            list-style-type: none;
-                        }
-                        th.rotate {
-                        /* Something you can count on */
-                        height: 140px;
-                        white-space: nowrap;
-                        }
-                        
-                        th.rotate > div {
-                        transform:
-                        /* Magic Numbers */
-                        translate(16px, 50px)
-                        /* 45 is really 360 - 45 */
-                        rotate(315deg);
-                        width: 30px;
-                        }
-                            th.rotate > div > span {
-                            border-bottom: 1px solid #ccc;
-                            padding: 5px 10px;
-                        }
+                        <!-- generate some specific css defined in the configuration file -->
                         <xsl:value-of select="$config//css"/>
-                        
                     </style>
 				</head>
 				<body>
