@@ -11,6 +11,9 @@
 <xsl:param name="folder"/>
 <xsl:param name="configfile"/>
 <xsl:variable name="config" select="document($configfile)"/>
+
+<xsl:include href="$config//stylesheet"/>
+
 <xsl:template match="/">
 	<xsl:for-each select="//arc:element | //arc:view">
 		<xsl:result-document method="html" href="{$folder}/browsepage-{@identifier}.html">
@@ -183,6 +186,9 @@
 						</tr>
 					</xsl:for-each>
 				</table>
+                <!-- Insert custom html -->
+                <xsl:call-template name="customElement"/>
+                
                 <!-- Create the structure for both the report and browse parts -->
                 <xsl:variable name="relationships">
                         <relationships>
