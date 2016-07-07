@@ -9,7 +9,9 @@
 	>
 
 <xsl:include href="../config/custom.xsl"/>
-	
+
+
+
 <xsl:template match="/">
 	<html>
 		<head>
@@ -52,7 +54,14 @@
 				<div class="ui-layout-center">
 					<div class="panel panel-default root-panel">
 						<div class="panel-heading root-panel-heading">
+                            <select id="searchelement" name="searchelement" class="form-control">
+                                <option value="Name" selected="true">Name</option>
+                                <xsl:for-each select="//arc:propertydef">
+                                    <option value="{@identifier}"><xsl:value-of select="@name"/></option>
+                                </xsl:for-each>
+                            </select>
 							<div class="input-group">
+                               
 							  <input id="searchtext" type="text" class="form-control" placeholder="Search for..."/>
 							  <span class="input-group-btn">
 								<button onclick="search()" class="btn btn-default" type="button">Go!</button>
@@ -103,7 +112,10 @@
 				<xsl:for-each select="arc:item[@identifierref]">
 					<xsl:sort select="//*[@identifier=current()/@identifierref]/arc:label"/>
 					<li class="tree-element">
-						<a href="browsepage-{@identifierref}.html?style=tabbed" target="contents">
+                        <xsl:for-each select="//*[@identifier=current()/@identifierref]/arc:properties/arc:property">
+                            <div class="tree-element-property" key="{@identifierref}" value="{arc:value}"/>
+                        </xsl:for-each>
+                        <a href="browsepage-{@identifierref}.html?style=tabbed" target="contents">
 							<xsl:choose>
 								<xsl:when test="//arc:element[@identifier=current()/@identifierref]">
 									<xsl:value-of select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
