@@ -56,20 +56,12 @@
                         rotate(315deg);
                         width: 30px;
                         }
-                        th.rotate > div > span {
-                        border-bottom: 1px solid #ccc;
-                        padding: 5px 10px;
+                            th.rotate > div > span {
+                            border-bottom: 1px solid #ccc;
+                            padding: 5px 10px;
                         }
-                        .panel-heading-danger > .panel-heading {
-                            background: #d9534f;
-                            color: #ffffff;
-                            border-color: #d9534f;
-                        }
-                        .panel-heading-warning > .panel-heading {
-                            background: #f0ad4e;
-                            color: #ffffff;
-                            border-color: #f0ad4e;
-                        }
+                        <xsl:value-of select="$config//css"/>
+                        
                     </style>
 				</head>
 				<body>
@@ -182,9 +174,8 @@
             </xsl:for-each>
         </properties>
     </xsl:variable>
-   
     <xsl:variable name="overrideElementStyle" select="$config//elementstyle[elementcondition[type=$element/@xsi:type or @type='any']/propertycondition[@name=$properties//property/@name and @value=$properties//property/@value]]"/>
-     <xsl:variable name="class" select="$overrideElementStyle//class"/>
+     <xsl:variable name="class" select="$overrideElementStyle//cardHeaderClass"/>
      <div class="panel panel-default root-panel {$class}">
 		<div class="panel-heading root-panel-heading">
             <h4>
@@ -245,8 +236,17 @@
                                                         <xsl:otherwise><xsl:value-of select="@source"/></xsl:otherwise>
                                                     </xsl:choose>
                                                 </xsl:variable>
-                                                <element id="{$elementRef}" name="{/arc:model/arc:elements/arc:element[@identifier=$elementRef]/arc:label}">
-                                                    <elementDocumentation><xsl:value-of select="/arc:model/arc:elements/arc:element[@identifier=$elementRef]/arc:documentation"/></elementDocumentation>
+                                                <xsl:variable name="referredElement" select="/arc:model/arc:elements/arc:element[@identifier=$elementRef]"/>
+                                                <xsl:variable name="referredElementProperties">
+                                                    <properties>
+                                                        <xsl:for-each select="$referredElement//arc:property">
+                                                            <property name="{//arc:propertydef[@identifier=current()/@identifierref]/@name}" value="{arc:value}"/>
+                                                        </xsl:for-each>
+                                                    </properties>
+                                                </xsl:variable>
+                                                <xsl:variable name="overrideElementStyle" select="$config//elementstyle[elementcondition[type=$referredElement/@xsi:type or @type='any']/propertycondition[@name=$referredElementProperties//property/@name and @value=$referredElementProperties//property/@value]]"/>
+                                                <element id="{$elementRef}" name="{$referredElement/arc:label}" overridingClass="{$overrideElementStyle//cardRelationClass}">
+                                                    <elementDocumentation><xsl:value-of select="$referredElement/arc:documentation"/></elementDocumentation>
                                                     <documentation><xsl:value-of select="arc:documentation"/></documentation>
                                                 </element>
                                             </xsl:for-each>
@@ -262,7 +262,7 @@
                         <h5><xsl:value-of select="@name"/></h5>
                         <table class="table table-hover table-condensed small">
                             <xsl:for-each select="element">
-                                <tr>
+                                <tr class="{@overridingClass}">
                                     <td>
                                         <a href="browsepage-{@id}.html"><xsl:value-of select="@name"/></a>
                                     </td>
@@ -291,7 +291,7 @@
                                 <xsl:if test="position()=1"><xsl:attribute name="class">tab-pane active</xsl:attribute></xsl:if>
                                 <table class="table table-hover table-condensed small">
                                     <xsl:for-each select="element">
-                                        <tr>
+                                        <tr class="{@overridingClass}">
                                             <td>
                                                 <a href="browsepage-{@id}.html"><xsl:value-of select="@name"/></a>
                                             </td>
