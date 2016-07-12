@@ -10,12 +10,10 @@
 
 <xsl:include href="../config/custom.xsl"/>
 
-
-
 <xsl:template match="/">
 	<html>
 		<head>
-			<title><xsl:value-of select="arc:model/arc:name"/> - Model</title>
+			<title><xsl:value-of select="arc:model/arc:name"/></title>
 			<meta charset="utf-8"/>
 			<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -64,7 +62,7 @@
                                
 							  <input id="searchtext" type="text" class="form-control" placeholder="Search for..."/>
 							  <span class="input-group-btn">
-								<button onclick="search()" class="btn btn-default" type="button">Go!</button>
+								<button onclick="search()" class="btn btn-default" type="button"><i class="glyphicon glyphicon-search"/></button>
 							  </span>
 							</div>
 						</div>
@@ -90,7 +88,7 @@
 							<p>Model Creation date:<xsl:value-of select="arc:model/arc:metadata/dc:date"/></p>
 							<p>Report Creation date:<xsl:value-of select="current-dateTime()"/></p>
 							<p>Contributors:<xsl:value-of select="arc:model/arc:metadata/dc:contributor"/></p>
-							<p><xsl:value-of select="arc:model/arc:documentation"/></p>	
+							<p class="documentation"><xsl:value-of select="arc:model/arc:documentation"/></p>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -11,10 +11,10 @@
 <xsl:param name="folder"/>
 <xsl:param name="configfile"/>
 <xsl:variable name="config" select="document($configfile)"/>
-<xsl:variable name="customxsl">../config/<xsl:value-of select="$config//stylesheet"/></xsl:variable>
+
 <xsl:include href="../config/custom.xsl"/>
 
-<xsl:template match="/">
+<xsl:template match="/arc:model">
 	<xsl:for-each select="//arc:element | //arc:view">
 		<xsl:result-document method="html" href="{$folder}/browsepage-{@identifier}.html">
 			<html>
@@ -29,9 +29,9 @@
 					<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-layout/1.4.3/layout-default.min.css"/>
 					<!-- BOOTSTRAP -->
 					<!-- Latest compiled and minified CSS -->
-					<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"/>
+					<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" media="all" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"/>
 					<!-- Optional theme -->
-					<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"/>
+					<!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"/-->
 					<!-- Latest compiled and minified JavaScript -->
 					<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 					<!-- D3PLUS -->
@@ -41,6 +41,11 @@
 					<link type="text/css" rel="stylesheet" href="css/model.css"/>
 					<script type="text/javascript" src="js/browse.js"></script>
                     <style>
+                    	@media print {
+                    		a[href]:after {
+                    			content: none;
+                    		}
+                    	}
                         <!-- generate some specific css defined in the configuration file -->
                         <xsl:value-of select="$config//css"/>
                     </style>
@@ -119,6 +124,7 @@
 						<xsl:for-each select="/arc:model/arc:organization//arc:item[arc:label=$folder]//arc:item[@identifierref]">
 							<xsl:sort select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
 							<xsl:variable name="element" select="//arc:element[@identifier=current()/@identifierref]"/>
+							<xsl:if test="$element">
 							<tr>
 								<td class="text-left"><a href="browsepage-{$element/@identifier}.html"><xsl:value-of select="$element/arc:label"/></a></td>
 								<td class="documentation"><xsl:value-of select="$element/arc:documentation"/></td>
@@ -135,6 +141,7 @@
 									</td>
 								</xsl:for-each>
 							</tr>
+							</xsl:if>
 						</xsl:for-each>
 					</table>
 				<!--/xsl:for-each-group-->
@@ -143,6 +150,26 @@
 	</div>
 </xsl:template>
 
+<xsl:template match="arc:view[arc:properties/arc:property[@identifierref=//arc:propertydef[@name='Type']/@identifier]/arc:value='Artifact']">
+		<xsl:message>Generating artifact <xsl:value-of select="arc:label"/></xsl:message>
+		<div class="documentation">
+			<xsl:copy>
+				<xsl:apply-templates select="arc:documentation"/>
+			</xsl:copy>
+			<h1>bold text</h1>
+		</div>
+</xsl:template>
+	
+<xsl:template match="@*|node()">
+	<xsl:copy>
+		<xsl:apply-templates select="@*|node()"/>
+	</xsl:copy>
+</xsl:template>
+	
+<xsl:template match="div[@type='view']">
+	<xsl:apply-templates select="//arc:view[@identifier=current()/@viewref]"/>
+</xsl:template>
+	
 <!-- template for an element card -->
 <xsl:template match="arc:element">
 	<xsl:variable name="type" select="@xsi:type"/>
@@ -157,17 +184,17 @@
     </xsl:variable>
     <xsl:variable name="overrideElementStyle" select="$config//elementstyle[elementcondition[type=$element/@xsi:type or @type='any']/propertycondition[@name=$properties//property/@name and @value=$properties//property/@value]]"/>
      <xsl:variable name="class" select="$overrideElementStyle//cardHeaderClass"/>
-     <div class="panel panel-default root-panel {$class}">
-		<div class="panel-heading root-panel-heading">
+     <div id="panel" class="panel panel-default root-panel {$class}">
+		<div id="panelheader" class="panel-heading root-panel-heading">
             <h4>
-                <xsl:call-template name="elementtype"><xsl:with-param name="type" select="@xsi:type"/></xsl:call-template>
+                <xsl:call-template name="elementalias"><xsl:with-param name="type" select="@xsi:type"/></xsl:call-template>
                 <xsl:text>&#160;</xsl:text>
                 <xsl:value-of select="arc:label"/>
                 <xsl:text>&#160;</xsl:text>
                 <a href="browsepage-{@identifier}.html?style=listed" target="_blank"><span class="glyphicon glyphicon-print"/></a>
             </h4>
 		</div>
-		<div class="panel-body root-panel-body">
+		<div id="panelbody" class="panel-body root-panel-body">
 			<div class="col-md-12">
 				<xsl:if test="arc:documentation">
 					<p class="documentation well"><xsl:value-of select="arc:documentation"/></p>
@@ -203,7 +230,7 @@
                                     <xsl:for-each-group select="current-group()" group-by="@source=$id">
                                         <type>
                                             <xsl:attribute name="name">
-                                                <xsl:call-template name="relationshiptype">
+                                                <xsl:call-template name="relationshipalias">
                                                     <xsl:with-param name="relationship" select="current()"/>
                                                     <xsl:with-param name="direction">
                                                         <xsl:choose>
@@ -294,7 +321,7 @@
 </xsl:template>
 
 <!-- template for creating an alias for the element type -->
-<xsl:template name="elementtype">
+<xsl:template name="elementalias">
 	<xsl:param name="type"/>
 	<xsl:choose>
 		<xsl:when test="$config//elementmapping[@type=$type]">
@@ -308,7 +335,7 @@
 
 
 <!-- template for creating an alias for the relationship type -->
-<xsl:template name="relationshiptype">
+<xsl:template name="relationshipalias">
 	<xsl:param name="relationship"/>
 	<xsl:param name="direction"/>
     <xsl:variable name="sourceElementType" select="//arc:element[@identifier=$relationship/@source]/@xsi:type"/>
@@ -320,7 +347,7 @@
         <xsl:when test="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction and @sourceType='any' and @targetType='any']">
             <xsl:value-of select="$config//relationshipmapping[@type=$relationship/@xsi:type and @direction=$direction and @sourceType='any' and @targetType='any']/@alias"/>
             <xsl:text>&#160;</xsl:text>
-            <xsl:call-template name="elementtype">
+            <xsl:call-template name="elementalias">
                 <xsl:with-param name="type">
                     <xsl:choose>
                         <xsl:when test="$direction='to'"><xsl:value-of select="$targetElementType"/></xsl:when>
@@ -332,7 +359,7 @@
 		<xsl:otherwise>
             <xsl:value-of select="fn:substring-before($relationship/@xsi:type,'Relationship')"/>
             <xsl:text>&#160;</xsl:text><xsl:value-of select="$direction"/><xsl:text>&#160;</xsl:text>
-            <xsl:call-template name="elementtype">
+            <xsl:call-template name="elementalias">
                 <xsl:with-param name="type">
                     <xsl:choose>
                         <xsl:when test="$direction='to'"><xsl:value-of select="$targetElementType"/></xsl:when>
@@ -558,10 +585,6 @@
 					<xsl:when test="$element/@xsi:type='Constraint'">
 						
 					</xsl:when>
-					
-					<xsl:otherwise>
-						<!-- TODO create shapes for other types -->	
-					</xsl:otherwise>
 				</xsl:choose>
 				
 			</a>
