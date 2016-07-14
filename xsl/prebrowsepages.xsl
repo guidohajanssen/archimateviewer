@@ -111,46 +111,74 @@
 			<b><xsl:value-of select="arc:label"/></b>
 		</div>
 		<div class="panel-body root-panel-body">
-			<div class="col-md-12">
+			
 				<xsl:variable name="properties" select="/arc:model/arc:propertydefs/arc:propertydef[@identifier=//arc:element[@identifier=/arc:model/arc:organization//arc:item[arc:label=$folder]//arc:item/@identifierref]//arc:property/@identifierref]"/>
-				<!--xsl:for-each-group select="/arc:model/arc:organization//arc:item[arc:label=$folder]" group-by="//arc:element[@identifier=current()/arc:item/@identifierred]/@xsi:type">
-					<h4><xsl:value-of select="current-group()/@xsi:type"/></h4-->
+				<xsl:for-each-group select="/arc:model/arc:organization//arc:item[arc:label=$folder]" group-by="arc:item/arc:label">
+					<xsl:sort select="current-grouping-key()"/>
+					<h4><xsl:value-of select="current-grouping-key()"/></h4>
 					<table class="table table-condensed table-bordered">
-						<tr>
-							<th>Name</th>
-							<th>Documentation</th>
-							<xsl:for-each select="$properties">
-								<th><xsl:value-of select="@name"/></th>
-							</xsl:for-each>
-						</tr>
-						<xsl:for-each select="/arc:model/arc:organization//arc:item[arc:label=$folder]//arc:item[@identifierref]">
+						<xsl:call-template name="catalogHeader">
+							<xsl:with-param name="properties" select="$properties"/>
+						</xsl:call-template>
+						<xsl:for-each select="current-group()//arc:item[@identifierref]">
 							<xsl:sort select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
-							<xsl:variable name="element" select="//arc:element[@identifier=current()/@identifierref]"/>
-							<xsl:if test="$element">
-							<tr>
-								<td class="text-left"><a href="browsepage-{$element/@identifier}.html"><xsl:value-of select="$element/arc:label"/></a></td>
-								<td class="documentation"><xsl:value-of select="$element/arc:documentation"/></td>
-								<xsl:for-each select="$properties">
-									<td>
-										<xsl:choose>
-											<xsl:when test="$element//arc:property[@identifierref=current()/@identifier and arc:value!='']">
-												<xsl:value-of select="$element//arc:property[@identifierref=current()/@identifier]/arc:value"/>
-											</xsl:when>
-											<xsl:when test="$element//arc:property[@identifierref=current()/@identifier]">
-												<i class="glyphicon glyphicon-ok"/>
-											</xsl:when>
-										</xsl:choose>
-									</td>
-								</xsl:for-each>
-							</tr>
-							</xsl:if>
+							<xsl:call-template name="catalogLine">
+								<xsl:with-param name="properties" select="$properties"/>
+							</xsl:call-template>
 						</xsl:for-each>
 					</table>
-				<!--/xsl:for-each-group-->
-			</div>
+				</xsl:for-each-group>
+			<xsl:if test="/arc:model/arc:organization//arc:item[arc:label=$folder]/arc:item[@identifierref]">
+				<table class="table table-condensed table-bordered">
+					<xsl:call-template name="catalogHeader">
+						<xsl:with-param name="properties" select="$properties"/>
+					</xsl:call-template>
+					<xsl:for-each select="/arc:model/arc:organization//arc:item[arc:label=$folder]/arc:item[@identifierref]">
+						<xsl:sort select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
+						<xsl:call-template name="catalogLine">
+							<xsl:with-param name="properties" select="$properties"/>
+						</xsl:call-template>
+					</xsl:for-each>
+				</table>
+			</xsl:if>
 		</div>
 	</div>
 </xsl:template>
+
+<xsl:template name="catalogHeader">
+	<xsl:param name="properties"/>
+	<tr>
+		<th>Name</th>
+		<th>Documentation</th>
+		<xsl:for-each select="$properties">
+			<th><xsl:value-of select="@name"/></th>
+		</xsl:for-each>
+	</tr>
+</xsl:template>
+
+<xsl:template name="catalogLine">
+	<xsl:param name="properties"/>
+	<xsl:variable name="element" select="//arc:element[@identifier=current()/@identifierref]"/>
+	<xsl:if test="$element">
+		<tr>
+			<td class="text-left"><a href="browsepage-{$element/@identifier}.html"><xsl:value-of select="$element/arc:label"/></a></td>
+			<td class="documentation"><xsl:value-of select="$element/arc:documentation"/></td>
+			<xsl:for-each select="$properties">
+				<td>
+					<xsl:choose>
+						<xsl:when test="$element//arc:property[@identifierref=current()/@identifier and arc:value!='']">
+							<xsl:value-of select="$element//arc:property[@identifierref=current()/@identifier]/arc:value"/>
+						</xsl:when>
+						<xsl:when test="$element//arc:property[@identifierref=current()/@identifier]">
+							<i class="glyphicon glyphicon-ok"/>
+						</xsl:when>
+					</xsl:choose>
+				</td>
+			</xsl:for-each>
+		</tr>
+	</xsl:if>
+</xsl:template>
+
 
 <xsl:template match="arc:view[arc:properties/arc:property[@identifierref=//arc:propertydef[@name='Type']/@identifier]/arc:value='Artifact']">
 		<xsl:message>Generating artifact <xsl:value-of select="arc:label"/></xsl:message>
