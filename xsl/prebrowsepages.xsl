@@ -10,13 +10,13 @@
 	>
 <xsl:param name="folder"/>
 <xsl:param name="configfile"/>
-<xsl:variable name="config" select="document($configfile)"/>
+<xsl:variable name="config" select="document(concat('file:///',replace($configfile,'\\','/')))"/>
 
 <xsl:include href="../config/custom.xsl"/>
 
 <xsl:template match="/arc:model">
 	<xsl:for-each select="//arc:element | //arc:view">
-		<xsl:result-document method="html" href="{$folder}/browsepage-{@identifier}.html">
+		<xsl:result-document method="html" href="file:///{$folder}/browsepage-{@identifier}.html">
 			<html>
 				<head>
 				´	<title><xsl:value-of select="arc:label"/></title>
