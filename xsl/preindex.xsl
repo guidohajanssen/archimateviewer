@@ -47,7 +47,7 @@
 					</div>
 				</nav>
 			</div>
-			<iframe name="contents" class="ui-layout-center" scrolling="yes"></iframe>
+			<iframe id="contents" name="contents" class="ui-layout-center" scrolling="yes"></iframe>
 			<div class="ui-layout-west">
 				<div class="ui-layout-center">
 					<div class="panel panel-default root-panel">
