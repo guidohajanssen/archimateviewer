@@ -59,7 +59,6 @@
                                 </xsl:for-each>
                             </select>
 							<div class="input-group">
-                               
 							  <input id="searchtext" type="text" class="form-control" placeholder="Search for..."/>
 							  <span class="input-group-btn">
 								<button onclick="search()" class="btn btn-default" type="button"><i class="glyphicon glyphicon-search"/></button>
