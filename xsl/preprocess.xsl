@@ -18,7 +18,7 @@ xmlns:arc="http://www.opengroup.org/xsd/archimate">
 <xsl:element name="xsl:include">
 <xsl:choose>
 <xsl:when test="$customxsl != ''">
-            <xsl:attribute name="href"><xsl:value-of select="$customxsl"/></xsl:attribute>
+            <xsl:attribute name="href">file:///<xsl:value-of select="replace($customxsl,'\\','/')"/></xsl:attribute>
 </xsl:when>
 <xsl:otherwise>
 <xsl:attribute name="href">default.xsl</xsl:attribute>
