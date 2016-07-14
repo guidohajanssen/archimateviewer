@@ -39,8 +39,10 @@
 					<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3plus/1.9.5/d3plus.min.js"></script>
 					<!-- REPORT SPECIFIC -->
 					<link type="text/css" rel="stylesheet" href="css/model.css"/>
+					<script type="text/javascript" src="js/zeroclipboard.js"></script>
 					<script type="text/javascript" src="js/browse.js"></script>
                     <style>
+                    	// don't show href value in printing mode
                     	@media print {
                     		a[href]:after {
                     			content: none;
@@ -191,8 +193,9 @@
                 <xsl:text>&#160;</xsl:text>
                 <xsl:value-of select="arc:label"/>
                 <xsl:text>&#160;</xsl:text>
-                <a href="browsepage-{@identifier}.html?style=listed" target="_blank"><span class="glyphicon glyphicon-print"/></a>
+                <a id="print" href="browsepage-{@identifier}.html?style=listed" target="_blank"><span class="glyphicon glyphicon-print"/></a>
             </h4>
+			<input id="link" style="position:relative" value="index.html?page={@identifier}"/>
 		</div>
 		<div id="panelbody" class="panel-body root-panel-body">
 			<div class="col-md-12">
