@@ -3,17 +3,38 @@
 	xmlns:arc="http://www.opengroup.org/xsd/archimate" xmlns:svg="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:fn="http://www.w3.org/2005/xpath-functions">
+	
 	<xsl:param name="folder"/>
 	<xsl:param name="configfile"/>
-	<xsl:variable name="config"
-		select="document(concat('file:///', replace($configfile, '\\', '/')))"/>
 
+	<xsl:variable name="configuri">
+		<xsl:choose>
+			<xsl:when test="contains($configfile,':')">
+				<xsl:value-of select="concat('file:///', replace($configfile, '\\', '/'))"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$configfile"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	<xsl:variable name="config" select="document($configuri)"/>
+	
 	<xsl:include href="../config/custom.xsl"/>
 
 	<xsl:template match="/arc:model">
 		<xsl:for-each select="//arc:element | //arc:view">
+			<xsl:variable name="folderUri">
+				<xsl:choose>
+					<xsl:when test="contains($folder,':')">
+						<xsl:value-of select="concat('file:///', replace($folder, '\\', '/'))"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="$folder"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
 			<xsl:result-document method="html"
-				href="file:///{$folder}/browsepage-{@identifier}.html">
+				href="{$folderUri}/browsepage-{@identifier}.html">
 				<html>
 					<head> ´ <title><xsl:value-of select="arc:label"/></title>
 						<meta charset="utf-8"/>
@@ -22,8 +43,8 @@
 						<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"/>
 						<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"/>
 						<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-layout/1.4.3/jquery.layout.min.js"/>
-						<link rel="stylesheet"
-							href="https://cdnjs.cloudflare.com/ajax/libs/jquery-layout/1.4.3/layout-default.min.css"/>
+						<!--link rel="stylesheet"
+							href="https://cdnjs.cloudflare.com/ajax/libs/jquery-layout/1.4.3/layout-default.min.css"/-->
 						<!-- BOOTSTRAP -->
 						<!-- Latest compiled and minified CSS -->
 						<link rel="stylesheet"
@@ -81,9 +102,6 @@
 					<xsl:value-of select="arc:label"/>
 				</b>
 				<xsl:text> </xsl:text>
-				<a href="printpage-{@identifier}.html" target="_blank">
-					<span class="glyphicon glyphicon-print"/>
-				</a>
 			</div>
 			<div class="panel-body root-panel-body">
 				<div class="col-md-12">
