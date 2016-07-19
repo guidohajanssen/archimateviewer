@@ -17,6 +17,7 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
+	
 	<xsl:variable name="config" select="document($configuri)"/>
 	
 	<xsl:include href="../config/custom.xsl"/>
@@ -36,15 +37,12 @@
 			<xsl:result-document method="html"
 				href="{$folderUri}/browsepage-{@identifier}.html">
 				<html>
-					<head> ´ <title><xsl:value-of select="arc:label"/></title>
+					<head><title><xsl:value-of select="arc:label"/></title>
 						<meta charset="utf-8"/>
 						<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 						<!-- JQUERY (use 1.x branch to be compatible with IE 6/7/8) / UI / LAYOUT -->
 						<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"/>
-						<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"/>
 						<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-layout/1.4.3/jquery.layout.min.js"/>
-						<!--link rel="stylesheet"
-							href="https://cdnjs.cloudflare.com/ajax/libs/jquery-layout/1.4.3/layout-default.min.css"/-->
 						<!-- BOOTSTRAP -->
 						<!-- Latest compiled and minified CSS -->
 						<link rel="stylesheet"
@@ -52,8 +50,6 @@
 							media="all"
 							integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
 							crossorigin="anonymous"/>
-						<!-- Optional theme -->
-						<!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"/-->
 						<!-- Latest compiled and minified JavaScript -->
 						<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"/>
 						<!-- D3PLUS -->
@@ -61,7 +57,6 @@
 						<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3plus/1.9.5/d3plus.min.js"/>
 						<!-- REPORT SPECIFIC -->
 						<link type="text/css" rel="stylesheet" href="css/model.css"/>
-						<script type="text/javascript" src="js/zeroclipboard.js"/>
 						<script type="text/javascript" src="js/browse.js"/>
 						<style>
                     	<!-- don't show href value in printing mode -->
@@ -172,12 +167,11 @@
 				</b>
 			</div>
 			<div class="panel-body root-panel-body">
-
 				<xsl:variable name="properties"
 					select="/arc:model/arc:propertydefs/arc:propertydef[@identifier = //arc:element[@identifier = /arc:model/arc:organization//arc:item[arc:label = $folder]//arc:item/@identifierref]//arc:property/@identifierref]"/>
 				<xsl:for-each-group
-					select="/arc:model/arc:organization//arc:item[arc:label = $folder]"
-					group-by="arc:item/arc:label">
+					select="/arc:model/arc:organization//arc:item[arc:label = $folder]/arc:item"
+					group-by="arc:label">
 					<xsl:sort select="current-grouping-key()"/>
 					<h4>
 						<xsl:value-of select="current-grouping-key()"/>
@@ -347,7 +341,7 @@
 					<!-- Insert custom html -->
 					<xsl:call-template name="customElement"/>
 
-					<!-- Create the structure for both the report and browse parts -->
+					<!-- Create the relationships structure for both the report and browse parts -->
 					<xsl:variable name="relationships">
 						<relationships>
 							<type name="Views">
@@ -646,12 +640,10 @@
 		</div>
 	</xsl:template>
 
-
-
 	<xsl:template match="arc:node">
 		<!-- include here also views since we could have a reference to a view in some tools -->
 		<xsl:variable name="element" select="//arc:*[@identifier = current()/@elementref]"/>
-		<xsl:variable name="statuspropid" select="//arc:propertydef[@name = 'Status']/@identifier"/>
+		<!-- select the properties of the node element or view -->
 		<xsl:variable name="properties">
 			<properties>
 				<xsl:for-each select="$element//arc:property">
@@ -660,6 +652,10 @@
 				</xsl:for-each>
 			</properties>
 		</xsl:variable>
+		<!-- the style of the node (only fill color) can be overridden depending on
+			- the element is the same type or any
+			- one of the properties has an exact match on the name and value
+		-->
 		<xsl:variable name="overrideNodeStyle"
 			select="$config//nodestyle[elementcondition[type = $element/@xsi:type or @type = 'any']/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]"/>
 		<xsl:variable name="fillColor">
@@ -667,29 +663,45 @@
 				<xsl:when test="$overrideNodeStyle">
 					<xsl:value-of select="$overrideNodeStyle/fillColor"/>
 				</xsl:when>
-				<xsl:otherwise>
+				<xsl:when test="arc:style/arc:fillColor">
 					<xsl:value-of
 						select="concat('rgb(', arc:style/arc:fillColor/@r, ',', arc:style/arc:fillColor/@g, ',', arc:style/arc:fillColor/@b, ')')"
 					/>
+				</xsl:when>
+				<!-- set default node color to white -->
+				<xsl:otherwise>
+					rgb(255,255,255)
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
+		
+		<xsl:variable name="strokeColor">
+			<xsl:choose>
+				<xsl:when test="arc:style/arc:strokeColor">
+					<xsl:value-of select="concat('rgb(', arc:style/arc:lineColor/@r, ',', arc:style/arc:lineColor/@g, ',', arc:style/arc:lineColor/@b, ')')"/>
+				</xsl:when>
+				<!-- set default stroke color to black -->
+				<xsl:otherwise>
+					rgb(0,0,0)
+				</xsl:otherwise>
+			</xsl:choose>	
+		</xsl:variable>
+		
+		<xsl:variable name="svgStyle"
+			select="concat('fill:', $fillColor, '; stroke-width:1;', 'stroke:', $strokeColor, ';')"/>
+		
 		<xsl:variable name="x1" select="@x"/>
 		<xsl:variable name="y1" select="@y"/>
 		<xsl:variable name="w" select="@w"/>
 		<xsl:variable name="h" select="@h"/>
 		<xsl:variable name="x2" select="$x1 + $w"/>
 		<xsl:variable name="y2" select="$y1 + $h"/>
-		<xsl:variable name="svg_stroke_r" select="arc:style/arc:lineColor/@r"/>
-		<xsl:variable name="svg_stroke_g" select="arc:style/arc:lineColor/@g"/>
-		<xsl:variable name="svg_stroke_b" select="arc:style/arc:lineColor/@b"/>
-		<xsl:variable name="strokeColor"
-			select="concat('rgb(', $svg_stroke_r, ',', $svg_stroke_g, ',', $svg_stroke_b, ')')"/>
-		<xsl:variable name="svg_style"
-			select="concat('fill:', $fillColor, '; stroke-width:1;', 'stroke:', $strokeColor, ';')"/>
+		
 		<xsl:choose>
+			<!-- draw an element or view node -->
 			<xsl:when test="@elementref">
 				<a xlink:href="browsepage-{@elementref}.html">
+					<!-- create the node shape -->
 					<xsl:choose>
 						<xsl:when
 							test="
@@ -698,48 +710,49 @@
 								$element/@xsi:type = 'BusinessFunction' or $element/@xsi:type = 'ApplicationFunction' or $element/@xsi:type = 'InfrastructureFunction' or
 								$element/@xsi:type = 'BusinessEvent' or $element/@xsi:type = 'BusinessProcess'">
 							<rect x="{$x1}" y="{$y1}" rx="10" ry="10" width="{$w}" height="{$h}"
-								style="{$svg_style}"/>
+								style="{$svgStyle}"/>
 						</xsl:when>
 						<xsl:when test="$element/@xsi:type = 'Value'">
 							<!-- need to set width for text wrapping -->
-							<ellipse cx="{$x1+$w div 2}" cy="{$y1+$h div 2}" width="{$w}"
-								rx="{$w div 2}" ry="{$h div 2}" style="{$svg_style}"/>
+							<ellipse cx="{$x2 div 2}" cy="{$y2 div 2}" width="{$w}"
+								rx="{$w div 2}" ry="{$h div 2}" style="{$svgStyle}"/>
 						</xsl:when>
 						<xsl:when test="$element/@xsi:type = 'Product'">
 							<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}"
-								style="{$svg_style}"/>
+								style="{$svgStyle}"/>
 							<!-- need to set width for text wrapping -->
 							<path d="M{$x1},{$y1+6} h{$w div 2} v-6" width="{$w}"
-								style="{$svg_style}"/>
+								style="{$svgStyle}"/>
 						</xsl:when>
 						<xsl:when
 							test="$element/@xsi:type = 'DataObject' or $element/@xsi:type = 'BusinessObject'">
 							<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}"
-								style="{$svg_style}"/>
+								style="{$svgStyle}"/>
 							<!-- need to set width for text wrapping -->
 							<line x1="{$x1}" y1="{$y1+6}" x2="{$x2}" y2="{$y1+6}" width="{$w}"
-								style="{$svg_style}"/>
+								style="{$svgStyle}"/>
 						</xsl:when>
 						<xsl:otherwise>
 							<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}"
-								style="{$svg_style}"/>
+								style="{$svgStyle}"/>
 						</xsl:otherwise>
 					</xsl:choose>
-
+					<!-- set the text -->
 					<text text-anchor="middle" x="{$x1+5}" y="{$y1+8}" width="{$w+-60}"
 						font-size="12">
 						<xsl:value-of select="$element/arc:label"/>
 					</text>
+					<!-- set the node symbol -->
 					<xsl:choose>
 						<xsl:when test="$element/@xsi:type = 'SystemSoftware'">
-							<circle cx="{$x2+-10}" cy="{$y1+10}" r="5" fill="{$fillColor}"
+							<circle cx="{$x2 - 10}" cy="{$y1 + 10}" r="5" fill="{$fillColor}"
 								stroke="black" stroke-width="1"/>
-							<circle cx="{$x2+-12}" cy="{$y1+12}" r="5" fill="{$fillColor}"
+							<circle cx="{$x2 - 12}" cy="{$y1 + 12}" r="5" fill="{$fillColor}"
 								stroke="black" stroke-width="1"/>
 						</xsl:when>
 						<xsl:when test="$element/@xsi:type = 'Node'">
 							<path
-								d="M{$x2 - 18},{$y1 + 8} L{$x2 - 15},{$y1 + 5} h10 v10 L{$x2+-8},{$y1+18}"
+								d="M{$x2 - 18},{$y1 + 8} L{$x2 - 15},{$y1 + 5} h10 v10 L{$x2 - 8},{$y1 + 18}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 							<line x1="{$x2+-5}" y1="{$y1+5}" x2="{$x2+-8}" y2="{$y1+8}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
@@ -839,15 +852,20 @@
 						<xsl:when test="$element/@xsi:type = 'Requirement'"> </xsl:when>
 						<xsl:when test="$element/@xsi:type = 'Constraint'"> </xsl:when>
 					</xsl:choose>
-
 				</a>
 			</xsl:when>
 			<!-- draw group box -->
-			<xsl:otherwise>
+			<xsl:when test="@type='group'">
 				<xsl:variable name="colorratio">0.9</xsl:variable>
 				<rect x="{$x1}" y="{$y1}" width="{$w div 2}" height="17"
 					style="fill:rgb({fn:round(arc:style/arc:fillColor/@r * $colorratio)},{fn:round(arc:style/arc:fillColor/@g * $colorratio)},{fn:round(arc:style/arc:fillColor/@b * $colorratio)}); strokewidth:1; stroke:{$strokeColor}"/>
-				<rect x="{$x1}" y="{$y1+17}" width="{$w}" height="{$h - 16}" style="{$svg_style}"/>
+				<rect x="{$x1}" y="{$y1+17}" width="{$w}" height="{$h - 16}" style="{$svgStyle}"/>
+				<text x="{$x1+5}" y="{$y1+2}" width="{$w}" font-size="12">
+					<xsl:value-of select="arc:label"/>
+				</text>
+			</xsl:when>
+			<xsl:otherwise>
+				<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svgStyle}"/>
 				<text x="{$x1+5}" y="{$y1+2}" width="{$w}" font-size="12">
 					<xsl:value-of select="arc:label"/>
 				</text>
@@ -861,24 +879,16 @@
 	<xsl:template name="svgconnection">
 		<xsl:variable name="relationshipid" select="@relationshipref"/>
 		<xsl:variable name="relationship" select="//arc:relationship[@identifier = $relationshipid]"/>
-		<xsl:variable name="statuspropid" select="//arc:propertydef[@name = 'Status']/@identifier"/>
-		<xsl:variable name="strokecolor">
+		<xsl:variable name="strokeColor">
 			<xsl:choose>
-				<xsl:when
-					test="$relationship//arc:property[@identifierref = $statuspropid and arc:value = 'Future']"
-					>#5cb85c</xsl:when>
-				<xsl:when
-					test="$relationship//arc:property[@identifierref = $statuspropid and arc:value = 'Discontinued']"
-					>#d9534f</xsl:when>
-				<xsl:when
-					test="$relationship//arc:property[@identifierref = $statuspropid and arc:value = 'Upgrade']"
-					>#f0ad4e</xsl:when>
+				<xsl:when test="arc:style/arc:strokeColor">
+					<xsl:value-of select="concat('rgb(', arc:style/arc:lineColor/@r, ',', arc:style/arc:lineColor/@g, ',', arc:style/arc:lineColor/@b, ')')"/>
+				</xsl:when>
+				<!-- set default stroke color to black -->
 				<xsl:otherwise>
-					<xsl:value-of
-						select="concat('rgb(', arc:style/arc:lineColor/@r, ',', arc:style/arc:lineColor/@g, ',', arc:style/arc:lineColor/@b, ')')"
-					/>
+					rgb(0,0,0)
 				</xsl:otherwise>
-			</xsl:choose>
+			</xsl:choose>	
 		</xsl:variable>
 		<xsl:variable name="sourceid" select="@source"/>
 		<xsl:variable name="targetid" select="@target"/>
@@ -1097,7 +1107,7 @@
 		</xsl:variable>
 
 		<path d="M{$startx},{$starty} {$bendpoint} L{$endx},{$endy}"
-			style="stroke:{$strokecolor};stroke-width:1; fill:none; {$dash} {$markerstart} {$markerend}"/>
+			style="stroke:{$strokeColor};stroke-width:1; fill:none; {$dash} {$markerstart} {$markerend}"/>
 
 	</xsl:template>
 
