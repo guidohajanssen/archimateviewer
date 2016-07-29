@@ -91,8 +91,8 @@
 				select="arc:properties/arc:property[@identifierref = //arc:propertydef[@name = 'yfolder']/@identifier]/arc:value"
 			/>
 		</xsl:variable>
-		<div class="panel panel-default root-panel">
-			<div class="panel-heading root-panel-heading">
+		<div id="panel" class="panel panel-default root-panel">
+			<div id="panelheader" class="panel-heading root-panel-heading">
 				<h4>
 					<xsl:value-of select="arc:label"/>
 					
@@ -102,7 +102,7 @@
 					<span class="glyphicon glyphicon-print"/>
 				</a>
 			</div>
-			<div class="panel-body root-panel-body">
+			<div id="panelbody" class="panel-body root-panel-body">
 				<div class="col-md-12">
 					<table>
 						<thead>
@@ -164,8 +164,8 @@
 				select="arc:properties/arc:property[@identifierref = //arc:propertydef[@name = 'folder']/@identifier]/arc:value"
 			/>
 		</xsl:variable>
-		<div class="panel panel-default root-panel">
-			<div class="panel-heading root-panel-heading">
+		<div id="panel" class="panel panel-default root-panel">
+			<div id="panelheader" class="panel-heading root-panel-heading">
 				<h4>
 					<xsl:value-of select="arc:label"/>
 					<xsl:text>&#160;</xsl:text>
@@ -174,7 +174,7 @@
 					</a>
 				</h4>
 			</div>
-			<div class="panel-body root-panel-body">
+			<div id="panelbody" class="panel-body root-panel-body">
 				<xsl:variable name="properties"
 					select="/arc:model/arc:propertydefs/arc:propertydef[@identifier = //arc:element[@identifier = /arc:model/arc:organization//arc:item[arc:label = $folder]//arc:item/@identifierref]//arc:property/@identifierref]"/>
 				<xsl:for-each-group
@@ -564,8 +564,8 @@
 
 	<xsl:template match="arc:view[.//arc:node]">
 		<xsl:variable name="id" select="@identifier"/>
-		<div class="panel panel-default root-panel">
-			<div class="panel-heading root-panel-heading">
+		<div id="panel" class="panel panel-default root-panel">
+			<div id="panelheader" class="panel-heading root-panel-heading">
 				<h4>
 					<xsl:value-of select="arc:label"/>
 					<xsl:text>&#160;</xsl:text>
@@ -574,7 +574,7 @@
 					</a>
 				</h4>
 			</div>
-			<div class="panel-body root-panel-body">
+			<div id="panelbody" class="panel-body root-panel-body">
 				<p>
 					<xsl:value-of select="arc:documentation"/>
 				</p>
