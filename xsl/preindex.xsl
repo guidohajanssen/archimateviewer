@@ -30,8 +30,8 @@
 			<!-- Latest compiled and minified JavaScript -->
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 			<!-- REPORT SPECIFIC -->
-			<link type="text/css" rel="stylesheet" href="css/model.css"/>
-			<script type="text/javascript" src="js/index.js"></script>
+			<link type="text/css" rel="stylesheet" href="http://www.archimateviewer.nl/1.0.0/libs/css/model.css"/>
+			<script type="text/javascript" src="http://www.archimateviewer.nl/1.0.0/libs/js/index.js"></script>
 		</head>
 		<body>
 			<div class="ui-layout-north">
