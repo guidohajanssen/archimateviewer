@@ -56,8 +56,8 @@
 						<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"/>
 						<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3plus/1.9.5/d3plus.min.js"/>
 						<!-- REPORT SPECIFIC -->
-						<link type="text/css" rel="stylesheet" href="css/model.css"/>
-						<script type="text/javascript" src="js/browse.js"/>
+						<link type="text/css" rel="stylesheet" href="http://www.archimateviewer.nl/1.0.0/libs/css/model.css"/>
+						<script type="text/javascript" src="http://www.archimateviewer.nl/1.0.0/libs/js/browse.js"/>
 						<style>
                     	<!-- don't show href value in printing mode -->
 							@media print{
@@ -93,10 +93,14 @@
 		</xsl:variable>
 		<div class="panel panel-default root-panel">
 			<div class="panel-heading root-panel-heading">
-				<b>
+				<h4>
 					<xsl:value-of select="arc:label"/>
-				</b>
-				<xsl:text> </xsl:text>
+					
+				</h4>
+				<xsl:text>&#160;</xsl:text>
+				<a id="print" href="browsepage-{@identifier}.html?style=listed" target="_blank">
+					<span class="glyphicon glyphicon-print"/>
+				</a>
 			</div>
 			<div class="panel-body root-panel-body">
 				<div class="col-md-12">
@@ -162,9 +166,13 @@
 		</xsl:variable>
 		<div class="panel panel-default root-panel">
 			<div class="panel-heading root-panel-heading">
-				<b>
+				<h4>
 					<xsl:value-of select="arc:label"/>
-				</b>
+					<xsl:text>&#160;</xsl:text>
+					<a id="print" href="browsepage-{@identifier}.html?style=listed" target="_blank">
+						<span class="glyphicon glyphicon-print"/>
+					</a>
+				</h4>
 			</div>
 			<div class="panel-body root-panel-body">
 				<xsl:variable name="properties"
@@ -560,6 +568,10 @@
 			<div class="panel-heading root-panel-heading">
 				<h4>
 					<xsl:value-of select="arc:label"/>
+					<xsl:text>&#160;</xsl:text>
+					<a id="print" href="browsepage-{@identifier}.html?style=listed" target="_blank">
+						<span class="glyphicon glyphicon-print"/>
+					</a>
 				</h4>
 			</div>
 			<div class="panel-body root-panel-body">
