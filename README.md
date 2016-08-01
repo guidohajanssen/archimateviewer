@@ -1,5 +1,6 @@
 # archimateviewer
-Viewer for Archimate based on the Open Group Exchange Format
+Viewer for Archimate models based on the Open Group Exchange Format.
+For example of the output see also http://www.archimateviewer.nl
 
 The project now contains only three basic files:
 - archimatetool.xsl transform an archimatetool (www.archimatetool.com) xml file to the archimate open group exchange format xml (http://www.opengroup.org/xsd/archimate/)
