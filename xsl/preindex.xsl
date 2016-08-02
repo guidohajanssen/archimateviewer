@@ -109,32 +109,36 @@
 				<xsl:for-each select="arc:item[@identifierref]">
 					<xsl:sort select="//*[@identifier=current()/@identifierref]/arc:label"/>
 					<li class="tree-element">
+						<!-- add properties to the tree element for search purposes -->
                         <xsl:for-each select="//*[@identifier=current()/@identifierref]/arc:properties/arc:property">
                             <div class="tree-element-property" key="{@identifierref}" value="{arc:value}"/>
                         </xsl:for-each>
-                        <a href="browsepage-{@identifierref}.html?style=tabbed" target="contents">
-							<xsl:choose>
-								<xsl:when test="//arc:element[@identifier=current()/@identifierref]">
+						<!-- create the tree leafs for elements, views and relationships -->
+						<xsl:choose>
+							<xsl:when test="//arc:element[@identifier=current()/@identifierref]">
+								<a href="browsepage-{@identifierref}.html?style=tabbed" target="contents">
 									<xsl:value-of select="//arc:element[@identifier=current()/@identifierref]/arc:label"/>
-								</xsl:when>
-								<xsl:when test="//arc:view[@identifier=current()/@identifierref]">
+								</a>
+							</xsl:when>
+							<xsl:when test="//arc:view[@identifier=current()/@identifierref]">
+								<a href="browsepage-{@identifierref}.html?style=tabbed" target="contents">
 									<xsl:value-of select="//arc:view[@identifier=current()/@identifierref]/arc:label"/>
-								</xsl:when>
-								<xsl:when test="//arc:relationship[@identifier=current()/@identifierref]">
-									<xsl:variable name="relationship" select="//arc:relationship[@identifier=current()/@identifierref]"/>
-									<xsl:choose>
-										<xsl:when test="$relationship/arc:label">
-											<xsl:value-of select="$relationship/arc:label"/>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:value-of select="$relationship/@xsi:type"/>
-										</xsl:otherwise>
-									</xsl:choose>
-									<xsl:value-of select="//arc:element[@identifier=$relationship/@source]/arc:label"/>-
-									<xsl:value-of select="//arc:element[@identifier=$relationship/@target]/arc:label"/>
-								</xsl:when>
-							</xsl:choose>
-						</a>
+								</a>
+							</xsl:when>
+							<xsl:when test="//arc:relationship[@identifier=current()/@identifierref]">
+								<xsl:variable name="relationship" select="//arc:relationship[@identifier=current()/@identifierref]"/>
+								<xsl:choose>
+									<xsl:when test="$relationship/arc:label">
+										<xsl:value-of select="$relationship/arc:label"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="$relationship/@xsi:type"/>
+									</xsl:otherwise>
+								</xsl:choose>
+								<xsl:value-of select="//arc:element[@identifier=$relationship/@source]/arc:label"/>-
+								<xsl:value-of select="//arc:element[@identifier=$relationship/@target]/arc:label"/>
+							</xsl:when>
+						</xsl:choose>
 					</li>
 				</xsl:for-each>
 			</ul>
