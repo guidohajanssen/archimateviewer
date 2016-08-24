@@ -7,7 +7,7 @@
 	<xsl:param name="folder"/>
 	<xsl:param name="configfile"/>
 
-	<xsl:variable name="configuri">
+	<xsl:variable name="configURI">
 		<xsl:choose>
 			<xsl:when test="contains($configfile,':')">
 				<xsl:value-of select="concat('file:///', replace($configfile, '\\', '/'))"/>
@@ -18,13 +18,13 @@
 		</xsl:choose>
 	</xsl:variable>
 	
-	<xsl:variable name="config" select="document($configuri)"/>
+	<xsl:variable name="config" select="document($configURI)"/>
 	
 	<xsl:include href="../config/custom.xsl"/>
 
 	<xsl:template match="/arc:model">
 		<xsl:for-each select="//arc:element | //arc:view">
-			<xsl:variable name="folderUri">
+			<xsl:variable name="folderURI">
 				<xsl:choose>
 					<xsl:when test="contains($folder,':')">
 						<xsl:value-of select="concat('file:///', replace($folder, '\\', '/'))"/>
@@ -35,7 +35,7 @@
 				</xsl:choose>
 			</xsl:variable>
 			<xsl:result-document method="html"
-				href="{$folderUri}/browsepage-{@identifier}.html">
+				href="{$folderURI}/browsepage-{@identifier}.html">
 				<html>
 					<head><title><xsl:value-of select="arc:label"/></title>
 						<meta charset="utf-8"/>
@@ -58,13 +58,14 @@
 						<!-- REPORT SPECIFIC -->
 						<link type="text/css" rel="stylesheet" href="http://www.archimateviewer.nl/1.0.0/libs/css/model.css"/>
 						<script type="text/javascript" src="http://www.archimateviewer.nl/1.0.0/libs/js/browse.js"/>
+						<!-- don't show href value in printing mode -->
 						<style>
-                    	<!-- don't show href value in printing mode -->
 							@media print{
 							    a[href]:after{
 							        content: none;
 							    }
-							}<!-- generate some specific css defined in the configuration file -->
+							}
+						<!-- generate some specific css defined in the configuration file -->
                         <xsl:value-of select="$config//css"/>
                     </style>
 					</head>
@@ -287,7 +288,7 @@
 
 	<!-- template for an element card -->
 	<xsl:template match="arc:element">
-		<xsl:variable name="type" select="@xsi:type"/>
+		<xsl:variable name="type" select="@type"/>
 		<xsl:variable name="id" select="@identifier"/>
 		<xsl:variable name="element" select="current()"/>
 		<xsl:variable name="properties">
@@ -299,13 +300,13 @@
 			</properties>
 		</xsl:variable>
 		<xsl:variable name="overrideElementStyle"
-			select="$config//elementstyle[elementcondition[type = $element/@xsi:type or @type = 'any']/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]"/>
+			select="$config//elementstyle[elementcondition[type = $element/@type or @type = 'any']/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]"/>
 		<xsl:variable name="class" select="$overrideElementStyle//cardHeaderClass"/>
 		<div id="panel" class="panel panel-default root-panel {$class}">
 			<div id="panelheader" class="panel-heading root-panel-heading">
 				<h4>
 					<xsl:call-template name="elementalias">
-						<xsl:with-param name="type" select="@xsi:type"/>
+						<xsl:with-param name="type" select="@type"/>
 					</xsl:call-template>
 					<xsl:text>&#160;</xsl:text>
 					<xsl:value-of select="arc:label"/>
@@ -360,8 +361,8 @@
 							</type>
 							<xsl:for-each-group
 								select="/arc:model/arc:relationships/arc:relationship[@source = $id or @target = $id]"
-								group-by="//arc:element[(@identifier = current()/@target and current()/@source = $id) or (@identifier = current()/@source and current()/@target = $id)]/@xsi:type">
-								<xsl:for-each-group select="current-group()" group-by="@xsi:type">
+								group-by="//arc:element[(@identifier = current()/@target and current()/@source = $id) or (@identifier = current()/@source and current()/@target = $id)]/@type">
+								<xsl:for-each-group select="current-group()" group-by="@type">
 									<xsl:for-each-group select="current-group()"
 										group-by="@source = $id">
 										<type>
@@ -401,7 +402,7 @@
 												</properties>
 												</xsl:variable>
 												<xsl:variable name="overrideElementStyle"
-												select="$config//elementstyle[elementcondition[type = $referredElement/@xsi:type or @type = 'any']/propertycondition[@name = $referredElementProperties//property/@name and @value = $referredElementProperties//property/@value]]"/>
+												select="$config//elementstyle[elementcondition[type = $referredElement/@type or @type = 'any']/propertycondition[@name = $referredElementProperties//property/@name and @value = $referredElementProperties//property/@value]]"/>
 												<element id="{$elementRef}"
 												name="{$referredElement/arc:label}"
 												overridingClass="{$overrideElementStyle//cardRelationClass}">
@@ -513,20 +514,20 @@
 		<xsl:param name="relationship"/>
 		<xsl:param name="direction"/>
 		<xsl:variable name="sourceElementType"
-			select="//arc:element[@identifier = $relationship/@source]/@xsi:type"/>
+			select="//arc:element[@identifier = $relationship/@source]/@type"/>
 		<xsl:variable name="targetElementType"
-			select="//arc:element[@identifier = $relationship/@target]/@xsi:type"/>
+			select="//arc:element[@identifier = $relationship/@target]/@type"/>
 		<xsl:choose>
 			<xsl:when
-				test="$config//relationshipmapping[@type = $relationship/@xsi:type and @direction = $direction and @sourceType = $sourceElementType and @targetType = $targetElementType]">
+				test="$config//relationshipmapping[@type = $relationship/@type and @direction = $direction and @sourceType = $sourceElementType and @targetType = $targetElementType]">
 				<xsl:value-of
-					select="$config//relationshipmapping[@type = $relationship/@xsi:type and @direction = $direction and @sourceType = $sourceElementType and @targetType = $targetElementType]/@alias"
+					select="$config//relationshipmapping[@type = $relationship/@type and @direction = $direction and @sourceType = $sourceElementType and @targetType = $targetElementType]/@alias"
 				/>
 			</xsl:when>
 			<xsl:when
-				test="$config//relationshipmapping[@type = $relationship/@xsi:type and @direction = $direction and @sourceType = 'any' and @targetType = 'any']">
+				test="$config//relationshipmapping[@type = $relationship/@type and @direction = $direction and @sourceType = 'any' and @targetType = 'any']">
 				<xsl:value-of
-					select="$config//relationshipmapping[@type = $relationship/@xsi:type and @direction = $direction and @sourceType = 'any' and @targetType = 'any']/@alias"/>
+					select="$config//relationshipmapping[@type = $relationship/@type and @direction = $direction and @sourceType = 'any' and @targetType = 'any']/@alias"/>
 				<xsl:text>&#160;</xsl:text>
 				<xsl:call-template name="elementalias">
 					<xsl:with-param name="type">
@@ -542,7 +543,7 @@
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="fn:substring-before($relationship/@xsi:type, 'Relationship')"/>
+				<xsl:value-of select="fn:substring-before($relationship/@type, 'Relationship')"/>
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="$direction"/>
 				<xsl:text>&#160;</xsl:text>
@@ -564,10 +565,13 @@
 
 	<xsl:template match="arc:view[.//arc:node]">
 		<xsl:variable name="id" select="@identifier"/>
+		<xsl:variable name="avType" select=".//arc:property[@identifierref=//arc:propertydef[@name='av:type']/@identifier]/arc:value"/>
 		<div id="panel" class="panel panel-default root-panel">
 			<div id="panelheader" class="panel-heading root-panel-heading">
 				<h4>
 					<xsl:value-of select="arc:label"/>
+					<xsl:text>&#160;</xsl:text>
+					<xsl:value-of select="$avType"/>
 					<xsl:text>&#160;</xsl:text>
 					<a id="print" href="browsepage-{@identifier}.html?style=listed" target="_blank">
 						<span class="glyphicon glyphicon-print"/>
@@ -578,6 +582,17 @@
 				<p>
 					<xsl:value-of select="arc:documentation"/>
 				</p>
+				
+				<xsl:if test="$avType='storyboard'">
+					<p>
+						<xsl:variable name="allViewElements" select="//arc:element[@identifier=current()//arc:node/@elementref]"/>
+						<!--xsl:variable name="allPlateauElements" select="//arc:element[@type='Plateau' and @identifier=//arc:relationship[@target=$allViewElements/@identifier]/@source]"/-->
+						<xsl:variable name="allPlateauElements" select="//arc:element[@type='Plateau']"/>
+						<xsl:for-each select="$allPlateauElements">
+							<input class="storyboard-checkbox" type="checkbox" checked="checked" onchange="storyboardEvaluation()"><xsl:value-of select="arc:label"/></input>
+						</xsl:for-each>
+					</p>
+				</xsl:if>
 				<div class="col-md-12">
 					<!-- calculate svg width and height based on the nodes in the view -->
 					<xsl:variable name="maxheight">
@@ -627,17 +642,17 @@
 							<marker id="markerOpenBlockArrow" markerWidth="13" markerHeight="13"
 								refX="10" refY="6" orient="auto">
 								<path d="M0,0 L9,6 L0,12 Z"
-									style="stroke:black; stroke-width:1; fill: white; "/>
+									style="stroke:black; stroke-width:1; stroke-dasharray:1,0; fill: white; "/>
 							</marker>
 							<marker id="markerOpenArrow" markerWidth="13" markerHeight="13"
 								refX="10" refY="6" orient="auto">
 								<path d="M2,2 L9,6 L2,10"
-									style="fill: none; stroke: black; stroke-width:1"/>
+									style="fill: none; stroke: black; stroke-dasharray:1,0; stroke-width:1"/>
 							</marker>
 							<marker id="markerClosedArrow" markerWidth="13" markerHeight="13"
 								refX="10" refY="6" orient="auto">
 								<path d="M2,2 L9,6 L2,10 Z"
-									style="fill: black; stroke: black; stroke-width:1"/>
+									style="fill: black; stroke: black; stroke-dasharray:1,0;stroke-width:1"/>
 							</marker>
 						</defs>
 						<!-- create all the nodes -->
@@ -653,6 +668,8 @@
 	</xsl:template>
 
 	<xsl:template match="arc:node">
+		<!-- view type -->
+		<xsl:variable name="avType" select="ancestor::arc:view//arc:property[@identifierref=//arc:propertydef[@name='av:type']/@identifier]/arc:value"/>
 		<!-- include here also views since we could have a reference to a view in some tools -->
 		<xsl:variable name="element" select="//arc:*[@identifier = current()/@elementref]"/>
 		<!-- select the properties of the node element or view -->
@@ -669,7 +686,7 @@
 			- one of the properties has an exact match on the name and value
 		-->
 		<xsl:variable name="overrideNodeStyle"
-			select="$config//nodestyle[elementcondition[type = $element/@xsi:type or @type = 'any']/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]"/>
+			select="$config//nodestyle[elementcondition[type = $element/@type or @type = 'any']/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]"/>
 		<xsl:variable name="fillColor">
 			<xsl:choose>
 				<xsl:when test="$overrideNodeStyle">
@@ -713,23 +730,27 @@
 			<!-- draw an element or view node -->
 			<xsl:when test="@elementref">
 				<a xlink:href="browsepage-{@elementref}.html">
+					<xsl:if test="$avType='storyboard'">
+						<xsl:variable name="plateauElements" select="//arc:element[@type='Plateau' and @identifier=//arc:relationship[@target=$element/@identifier]/@source]"/>
+						<property id="Plateau" value="{$plateauElements/@arc:label}"/> 
+					</xsl:if>
 					<!-- create the node shape -->
 					<xsl:choose>
 						<xsl:when
 							test="
-								$element/@xsi:type = 'BusinessProcess' or $element/@xsi:type = 'BusinessInteraction' or $element/@xsi:type = 'BusinessFunction' or
-								$element/@xsi:type = 'BusinessService' or $element/@xsi:type = 'ApplicationService' or $element/@xsi:type = 'InfrastructureService' or
-								$element/@xsi:type = 'BusinessFunction' or $element/@xsi:type = 'ApplicationFunction' or $element/@xsi:type = 'InfrastructureFunction' or
-								$element/@xsi:type = 'BusinessEvent' or $element/@xsi:type = 'BusinessProcess'">
+								$element/@type = 'BusinessProcess' or $element/@type = 'BusinessInteraction' or $element/@type = 'BusinessFunction' or
+								$element/@type = 'BusinessService' or $element/@type = 'ApplicationService' or $element/@type = 'InfrastructureService' or
+								$element/@type = 'BusinessFunction' or $element/@type = 'ApplicationFunction' or $element/@type = 'InfrastructureFunction' or
+								$element/@type = 'BusinessEvent' or $element/@type = 'BusinessProcess'">
 							<rect x="{$x1}" y="{$y1}" rx="10" ry="10" width="{$w}" height="{$h}"
 								style="{$svgStyle}"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Value'">
+						<xsl:when test="$element/@type = 'Value'">
 							<!-- need to set width for text wrapping -->
 							<ellipse cx="{$x2 div 2}" cy="{$y2 div 2}" width="{$w}"
 								rx="{$w div 2}" ry="{$h div 2}" style="{$svgStyle}"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Product'">
+						<xsl:when test="$element/@type = 'Product'">
 							<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}"
 								style="{$svgStyle}"/>
 							<!-- need to set width for text wrapping -->
@@ -737,7 +758,7 @@
 								style="{$svgStyle}"/>
 						</xsl:when>
 						<xsl:when
-							test="$element/@xsi:type = 'DataObject' or $element/@xsi:type = 'BusinessObject'">
+							test="$element/@type = 'DataObject' or $element/@type = 'BusinessObject'">
 							<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}"
 								style="{$svgStyle}"/>
 							<!-- need to set width for text wrapping -->
@@ -750,19 +771,21 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					<!-- set the text -->
+					<xsl:variable name="stereotype"><xsl:value-of select="//arc:specializedConceptDefinition[@identifier=$element/@specializationref]/arc:label"/></xsl:variable>
 					<text text-anchor="middle" x="{$x1+5}" y="{$y1+8}" width="{$w+-60}"
 						font-size="12">
+						<xsl:if test="$stereotype != ''">&lt;&lt;<xsl:value-of select="$stereotype"/>&gt;&gt;</xsl:if>
 						<xsl:value-of select="$element/arc:label"/>
 					</text>
 					<!-- set the node symbol -->
 					<xsl:choose>
-						<xsl:when test="$element/@xsi:type = 'SystemSoftware'">
+						<xsl:when test="$element/@type = 'SystemSoftware'">
 							<circle cx="{$x2 - 10}" cy="{$y1 + 10}" r="5" fill="{$fillColor}"
 								stroke="black" stroke-width="1"/>
 							<circle cx="{$x2 - 12}" cy="{$y1 + 12}" r="5" fill="{$fillColor}"
 								stroke="black" stroke-width="1"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Node'">
+						<xsl:when test="$element/@type = 'Node'">
 							<path
 								d="M{$x2 - 18},{$y1 + 8} L{$x2 - 15},{$y1 + 5} h10 v10 L{$x2 - 8},{$y1 + 18}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
@@ -771,14 +794,14 @@
 							<rect x="{$x2+-18}" y="{$y1+8}" width="10" height="10"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Device'">
+						<xsl:when test="$element/@type = 'Device'">
 							<path
 								d="M{$x2+-17},{$y1+18} L{$x2+-9},{$y1+11} L{$x2+-3},{$y1+18} L{$x2+-17},{$y1+18}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 							<rect x="{$x2+-15}" y="{$y1+5}" width="11" height="9"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'ApplicationComponent'">
+						<xsl:when test="$element/@type = 'ApplicationComponent'">
 							<rect x="{$x2+-15}" y="{$y1+5}" width="10" height="14"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 							<rect x="{$x2+-18}" y="{$y1+7}" width="6" height="3" fill="{$fillColor}"
@@ -787,7 +810,7 @@
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
 						<xsl:when
-							test="$element/@xsi:type = 'BusinessRole' or $element/@xsi:type = 'Stakeholder'">
+							test="$element/@type = 'BusinessRole' or $element/@type = 'Stakeholder'">
 							<circle cx="{$x2+-17}" cy="{$y1+10}" r="4" fill="{$fillColor}"
 								stroke="black" stroke-width="1"/>
 							<rect x="{$x2+-17}" y="{$y1+5}" width="6" height="10"
@@ -799,7 +822,7 @@
 							<line x1="{$x2+-17}" y1="{$y1+14}" x2="{$x2+-11}" y2="{$y1+14}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'BusinessActor'">
+						<xsl:when test="$element/@type = 'BusinessActor'">
 							<circle cx="{$x2+-9}" cy="{$y1+7}" r="3" fill="{$fillColor}"
 								stroke="black" stroke-width="1"/>
 							<line x1="{$x2+-9}" y1="{$y1+10}" x2="{$x2+-9}" y2="{$y1+16}"
@@ -811,58 +834,58 @@
 							<line x1="{$x2+-9}" y1="{$y1+16}" x2="{$x2+-5}" y2="{$y1+21}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'BusinessProcess'">
+						<xsl:when test="$element/@type = 'BusinessProcess'">
 							<path
 								d="M{$x2 - 18},{$y1+8} h9 v-3 L{$x2 - 5},{$y1+10} L{$x2 - 9},{$y1+15} v-3 h-9 Z"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Contract'">
+						<xsl:when test="$element/@type = 'Contract'">
 							<rect x="{$x2 - 18}" y="{$y1+5}" width="12" height="10"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 							<path d="M{$x2 - 18},{$y1+8} h12" fill="{$fillColor}" stroke="black"
 								stroke-width="0.75"/>
 						</xsl:when>
 						<xsl:when
-							test="$element/@xsi:type = 'BusinessInteraction' or $element/@xsi:type = 'ApplicationInteraction'">
+							test="$element/@type = 'BusinessInteraction' or $element/@type = 'ApplicationInteraction'">
 							<path d="M{$x2 - 12} {$y1+6} A 5 5 0 0 0 {$x2 - 12} {$y1 + 16} Z"
 								fill="{$fillColor}" stroke="black" stroke-width="1"/>
 							<path d="M{$x2 - 9} {$y1+16} A 5 5 0 0 0 {$x2 - 9} {$y1 + 6} Z"
 								fill="{$fillColor}" stroke="black" stroke-width="1"/>
 						</xsl:when>
 						<xsl:when
-							test="$element/@xsi:type = 'BusinessCollaboration' or $element/@xsi:type = 'ApplicationCollaboration'">
+							test="$element/@type = 'BusinessCollaboration' or $element/@type = 'ApplicationCollaboration'">
 							<circle cx="{$x2 - 14}" cy="{$y1+11}" r="5" fill="none" stroke="black"
 								stroke-width="1"/>
 							<circle cx="{$x2 - 10}" cy="{$y1+11}" r="5" fill="none" stroke="black"
 								stroke-width="1"/>
 						</xsl:when>
 						<xsl:when
-							test="$element/@xsi:type = 'BusinessInterface' or $element/@xsi:type = 'ApplicationInterface' or $element/@xsi:type = 'InfrastructureInterface'">
+							test="$element/@type = 'BusinessInterface' or $element/@type = 'ApplicationInterface' or $element/@type = 'InfrastructureInterface'">
 							<circle cx="{$x2 - 8}" cy="{$y1+10}" r="4" fill="{$fillColor}"
 								stroke="black" stroke-width="1"/>
 							<path d="M{$x2 - 13},{$y1+10} h-5" fill="none" stroke="black"
 								stroke-width="1"/>
 						</xsl:when>
 						<xsl:when
-							test="$element/@xsi:type = 'BusinessFunction' or $element/@xsi:type = 'ApplicationFunction' or $element/@xsi:type = 'InfrastructureFunction'">
+							test="$element/@type = 'BusinessFunction' or $element/@type = 'ApplicationFunction' or $element/@type = 'InfrastructureFunction'">
 							<path d="M{$x2 - 8},{$y1+5} l5,5 v5 l-5,-5 l-5,5 v-5 Z" fill="none"
 								stroke="black" stroke-width="1"/>
 						</xsl:when>
 						<xsl:when
-							test="$element/@xsi:type = 'BusinessService' or $element/@xsi:type = 'ApplicationService' or $element/@xsi:type = 'InfrastructureService'">
+							test="$element/@type = 'BusinessService' or $element/@type = 'ApplicationService' or $element/@type = 'InfrastructureService'">
 							<rect x="{$x2 - 22}" y="{$y1+5}" rx="3" ry="3" width="13" height="7"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Meaning'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Representation'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Location'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Artifact'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Driver'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Assessment'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Goal'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Principle'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Requirement'"> </xsl:when>
-						<xsl:when test="$element/@xsi:type = 'Constraint'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Meaning'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Representation'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Location'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Artifact'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Driver'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Assessment'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Goal'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Principle'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Requirement'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Constraint'"> </xsl:when>
 					</xsl:choose>
 				</a>
 			</xsl:when>
@@ -923,43 +946,43 @@
 		<!-- select the start shape of the connection -->
 		<xsl:variable name="markerstart">
 			<xsl:choose>
-				<xsl:when test="$relationship/@xsi:type = 'AssignmentRelationship'">marker-start:
+				<xsl:when test="$relationship/@type = 'AssignmentRelationship'">marker-start:
 					url(#markerCircleStart);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'AggregationRelationship'">marker-start:
+				<xsl:when test="$relationship/@type = 'AggregationRelationship'">marker-start:
 					url(#markerOpenDiamond);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'CompositionRelationship'">marker-start:
+				<xsl:when test="$relationship/@type = 'CompositionRelationship'">marker-start:
 					url(#markerClosedDiamond);</xsl:when>
 			</xsl:choose>
 		</xsl:variable>
 		<!-- select the end shape of the connection -->
 		<xsl:variable name="markerend">
 			<xsl:choose>
-				<xsl:when test="$relationship/@xsi:type = 'UsedByRelationship'">marker-end:
+				<xsl:when test="$relationship/@type = 'UsedByRelationship'">marker-end:
 					url(#markerOpenArrow);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'AccessRelationship'">marker-end:
+				<xsl:when test="$relationship/@type = 'AccessRelationship'">marker-end:
 					url(#markerOpenArrow);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'AssignmentRelationship'">marker-end:
+				<xsl:when test="$relationship/@type = 'AssignmentRelationship'">marker-end:
 					url(#markerCircleEnd);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'RealisationRelationship'">marker-end:
+				<xsl:when test="$relationship/@type = 'RealisationRelationship'">marker-end:
 					url(#markerOpenBlockArrow);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'SpecialisationRelationship'">marker-end:
+				<xsl:when test="$relationship/@type = 'SpecialisationRelationship'">marker-end:
 					url(#markerOpenBlockArrow);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'TriggeringRelationship'">marker-end:
+				<xsl:when test="$relationship/@type = 'TriggeringRelationship'">marker-end:
 					url(#markerClosedArrow);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'FlowRelationship'">marker-end:
+				<xsl:when test="$relationship/@type = 'FlowRelationship'">marker-end:
 					url(#markerClosedArrow);</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'InfluenceRelationship'">marker-end:
+				<xsl:when test="$relationship/@type = 'InfluenceRelationship'">marker-end:
 					url(#markerClosedArrow);</xsl:when>
 			</xsl:choose>
 		</xsl:variable>
 		<!-- select the line dash if necessary -->
 		<xsl:variable name="dash">
 			<xsl:choose>
-				<xsl:when test="$relationship/@xsi:type = 'AccessRelationship'"
+				<xsl:when test="$relationship/@type = 'AccessRelationship'"
 					>stroke-dasharray:3,3;</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'RealisationRelationship'"
+				<xsl:when test="$relationship/@type = 'RealisationRelationship'"
 					>stroke-dasharray:5,3;</xsl:when>
-				<xsl:when test="$relationship/@xsi:type = 'FlowRelationship'"
+				<xsl:when test="$relationship/@type = 'FlowRelationship'"
 					>stroke-dasharray:5,3;</xsl:when>
 			</xsl:choose>
 		</xsl:variable>
