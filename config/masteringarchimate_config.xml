@@ -1,0 +1,169 @@
+<configuration>
+    <elementLabel context="node" includeGrouping='true' includeType='true'/>
+    <elementLabel context="element" includeGrouping='true' includeType='true'/>
+    <elementLabel context="relationship" includeGrouping='true' includeType='false'/>
+    <mappings>
+        <elementmapping type="ApplicationComponent" alias="Application Component"/>
+        <elementmapping type="SystemSoftware" alias="System Software"/>
+        <elementmapping type="BusinessActor" alias="Business Actor"/>
+        <elementmapping type="BusinessRole" alias="Business Role"/>
+        <elementmapping type="BusinessEvent" alias="Business Event"/>
+        
+        <relationshipmapping sourceType="any" targetType="any" type="AssociationRelationship"
+            direction="to" alias="relates to"/>
+        <relationshipmapping sourceType="any" targetType="any" type="AssociationRelationship"
+            direction="from" alias="relates to"/>
+        <relationshipmapping sourceType="any" targetType="any" type="AssignmentRelationship"
+            direction="to" alias="performs"/>
+        <relationshipmapping sourceType="any" targetType="any" type="AssignmentRelationship"
+            direction="from" alias="is performed by"/>
+        <relationshipmapping sourceType="any" targetType="any" type="FlowRelationship"
+            direction="to" alias="flows to"/>
+        <relationshipmapping sourceType="any" targetType="any" type="FlowRelationship"
+            direction="from" alias="flows from"/>
+        <relationshipmapping sourceType="any" targetType="any" type="UsedByRelationship"
+            direction="to" alias="used by"/>
+        <relationshipmapping sourceType="any" targetType="any" type="UsedByRelationship"
+            direction="from" alias="uses"/>
+        <relationshipmapping sourceType="any" targetType="any" type="CompositionRelationship"
+            direction="from" alias="is composed of"/>
+        <relationshipmapping sourceType="any" targetType="any" type="CompositionRelationship"
+            direction="to" alias="contains"/>
+        <relationshipmapping sourceType="any" targetType="any" type="AggregationRelationship"
+            direction="from" alias="is parts of"/>
+        <relationshipmapping sourceType="any" targetType="any" type="AggregationRelationship"
+            direction="to" alias="contains"/>
+        <!-- specific mappings -->
+        <relationshipmapping sourceType="Node" targetType="Artifact" type="AssignmentRelationship"
+            direction="from" alias="resides on"/>
+    </mappings>
+    <nodestyle type="element">
+        <elementcondition type="ApplicationCollaboration"/>
+        <fillColor>#afffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="ApplicationFunction"/>
+        <fillColor>#ffffaf</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Meaning"/>
+        <fillColor>#e6ffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessRole"/>
+        <fillColor>#e6ffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="DataObject"/>
+        <fillColor>#afffaf</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="ApplicationComponent"/>
+        <fillColor>#afffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Network"/>
+        <fillColor>#7dffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessService"/>
+        <fillColor>#ffffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="InfrastructureInterface"/>
+        <fillColor>#7dffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Device"/>
+        <fillColor>#7dffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Artifact"/>
+        <fillColor>#91ff91</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Contract"/>
+        <fillColor>#e6ffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Product"/>
+        <fillColor>#e6ffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="CommunicationPath"/>
+        <fillColor>#7dffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Value"/>
+        <fillColor>#e6ffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Node"/>
+        <fillColor>#7dffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="ApplicationService"/>
+        <fillColor>#ffffaf</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessFunction"/>
+        <fillColor>#ffffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessEvent"/>
+        <fillColor>#ffffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Representation"/>
+        <fillColor>#e6ffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="InfrastructureFunction"/>
+        <fillColor>#ffff82</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="Location"/>
+        <fillColor>#e6ffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessInterface"/>
+        <fillColor>#e6ffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessInteraction"/>
+        <fillColor>#ffffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="InfrastructureService"/>
+        <fillColor>#ffff82</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="ApplicationInterface"/>
+        <fillColor>#afffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="SystemSoftware"/>
+        <fillColor>#7dffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="ApplicationInteraction"/>
+        <fillColor>#ffffaf</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessProcess"/>
+        <fillColor>#ffffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessCollaboration"/>
+        <fillColor>#e6ffff</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessObject"/>
+        <fillColor>#e6ffe6</fillColor>
+    </nodestyle>
+    <nodestyle type="element">
+        <elementcondition type="BusinessActor"/>
+        <fillColor>#e6ffff</fillColor>
+    </nodestyle>
+  
+</configuration>
