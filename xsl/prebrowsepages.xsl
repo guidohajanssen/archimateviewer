@@ -305,12 +305,11 @@
 		<div id="panel" class="panel panel-default root-panel {$class}">
 			<div id="panelheader" class="panel-heading root-panel-heading">
 				<h4>
-					<xsl:call-template name="elementalias">
-						<xsl:with-param name="type" select="@type"/>
+					<xsl:call-template name="elementLabel">
+						<xsl:with-param name="element" select="."/>
+						<xsl:with-param name="context">element</xsl:with-param>
 					</xsl:call-template>
-					<xsl:text>&#160;</xsl:text>
-					<xsl:value-of select="arc:label"/>
-					<xsl:text>&#160;</xsl:text>
+					<xsl:text> </xsl:text>
 					<a id="print" href="browsepage-{@identifier}.html?style=listed" target="_blank">
 						<span class="glyphicon glyphicon-print"/>
 					</a>
@@ -349,77 +348,11 @@
 					</table>
 					<!-- Insert custom html -->
 					<xsl:call-template name="customElement"/>
-
 					<!-- Create the relationships structure for both the report and browse parts -->
 					<xsl:variable name="relationships">
-						<relationships>
-							<type name="Views">
-								<xsl:for-each
-									select="/arc:model/arc:views/arc:view//arc:node[@elementref = $id]/ancestor::arc:view">
-									<element id="{@identifier}" name="{arc:label}"/>
-								</xsl:for-each>
-							</type>
-							<xsl:for-each-group
-								select="/arc:model/arc:relationships/arc:relationship[@source = $id or @target = $id]"
-								group-by="//arc:element[(@identifier = current()/@target and current()/@source = $id) or (@identifier = current()/@source and current()/@target = $id)]/@type">
-								<xsl:for-each-group select="current-group()" group-by="@type">
-									<xsl:for-each-group select="current-group()"
-										group-by="@source = $id">
-										<type>
-											<xsl:attribute name="name">
-												<xsl:call-template name="relationshipalias">
-												<xsl:with-param name="relationship"
-												select="current()"/>
-												<xsl:with-param name="direction">
-												<xsl:choose>
-												<xsl:when test="@source = $id">to</xsl:when>
-												<xsl:otherwise>from</xsl:otherwise>
-												</xsl:choose>
-												</xsl:with-param>
-												</xsl:call-template>
-											</xsl:attribute>
-											<xsl:for-each select="current-group()">
-												<xsl:variable name="elementRef">
-												<xsl:choose>
-												<xsl:when test="@source = $id">
-												<xsl:value-of select="@target"/>
-												</xsl:when>
-												<xsl:otherwise>
-												<xsl:value-of select="@source"/>
-												</xsl:otherwise>
-												</xsl:choose>
-												</xsl:variable>
-												<xsl:variable name="referredElement"
-												select="/arc:model/arc:elements/arc:element[@identifier = $elementRef]"/>
-												<xsl:variable name="referredElementProperties">
-												<properties>
-												<xsl:for-each
-												select="$referredElement//arc:property">
-												<property
-												name="{//arc:propertydef[@identifier=current()/@identifierref]/@name}"
-												value="{arc:value}"/>
-												</xsl:for-each>
-												</properties>
-												</xsl:variable>
-												<xsl:variable name="overrideElementStyle"
-												select="$config//elementstyle[elementcondition[type = $referredElement/@type or @type = 'any']/propertycondition[@name = $referredElementProperties//property/@name and @value = $referredElementProperties//property/@value]]"/>
-												<element id="{$elementRef}"
-												name="{$referredElement/arc:label}"
-												overridingClass="{$overrideElementStyle//cardRelationClass}">
-												<elementDocumentation>
-												<xsl:value-of
-												select="$referredElement/arc:documentation"/>
-												</elementDocumentation>
-												<documentation>
-												<xsl:value-of select="arc:documentation"/>
-												</documentation>
-												</element>
-											</xsl:for-each>
-										</type>
-									</xsl:for-each-group>
-								</xsl:for-each-group>
-							</xsl:for-each-group>
-						</relationships>
+						<xsl:call-template name="elementRelationships">
+							<xsl:with-param name="id" select="$id"/>	
+						</xsl:call-template>		
 					</xsl:variable>
 					<!-- Create the report part -->
 					<div id="listed" style="display:none">
@@ -494,9 +427,90 @@
 			</div>
 		</div>
 	</xsl:template>
-
-	<!-- template for creating an alias for the element type -->
-	<xsl:template name="elementalias">
+	<xsl:template name="elementRelationships">
+		<xsl:param name="id"/>
+		<relationships>
+			<type name="Views">
+				<xsl:for-each
+					select="/arc:model/arc:views/arc:view//arc:node[@elementref = $id]/ancestor::arc:view">
+					<element id="{@identifier}" name="{arc:label}"/>
+				</xsl:for-each>
+			</type>
+			<xsl:for-each-group
+				select="/arc:model/arc:relationships/arc:relationship[@source = $id or @target = $id]"
+				group-by="//arc:element[(@identifier = current()/@target and current()/@source = $id) or (@identifier = current()/@source and current()/@target = $id)]/@type">
+				<xsl:for-each-group select="current-group()" group-by="@type">
+					<xsl:for-each-group select="current-group()"
+						group-by="@source = $id">
+						<type>
+							<xsl:attribute name="name">
+								<xsl:call-template name="relationshipTypeAlias">
+									<xsl:with-param name="relationship"
+										select="current()"/>
+									<xsl:with-param name="direction">
+										<xsl:choose>
+											<xsl:when test="@source = $id">to</xsl:when>
+											<xsl:otherwise>from</xsl:otherwise>
+										</xsl:choose>
+									</xsl:with-param>
+								</xsl:call-template>
+							</xsl:attribute>
+							<xsl:for-each select="current-group()">
+								<xsl:variable name="elementRef">
+									<xsl:choose>
+										<xsl:when test="@source = $id">
+											<xsl:value-of select="@target"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="@source"/>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:variable>
+								<xsl:variable name="referredElement"
+									select="/arc:model/arc:elements/arc:element[@identifier = $elementRef]"/>
+								<xsl:variable name="referredElementProperties">
+									<properties>
+										<xsl:for-each
+											select="$referredElement//arc:property">
+											<property
+												name="{//arc:propertydef[@identifier=current()/@identifierref]/@name}"
+												value="{arc:value}"/>
+										</xsl:for-each>
+									</properties>
+								</xsl:variable>
+								<xsl:variable name="elementLabel">
+									<xsl:call-template name="elementLabel">
+										<xsl:with-param name="element" select="$referredElement"/>
+										<xsl:with-param name="context">relationship</xsl:with-param>
+									</xsl:call-template>
+								</xsl:variable>
+								<xsl:variable name="overrideElementStyle"
+									select="$config//elementstyle[elementcondition[type = $referredElement/@type or @type = 'any']/propertycondition[@name = $referredElementProperties//property/@name and @value = $referredElementProperties//property/@value]]"/>
+								<element id="{$elementRef}"
+									name="{$elementLabel}"
+									overridingClass="{$overrideElementStyle//cardRelationClass}">
+									<elementDocumentation>
+										<xsl:value-of
+											select="$referredElement/arc:documentation"/>
+									</elementDocumentation>
+									<documentation>
+										<xsl:value-of select="arc:documentation"/>
+									</documentation>
+								</element>
+							</xsl:for-each>
+						</type>
+					</xsl:for-each-group>
+				</xsl:for-each-group>
+			</xsl:for-each-group>
+		</relationships>
+	</xsl:template>
+	
+	<!-- 
+		template for creating an alias for the element type 
+		@type: 		type of the element
+		@return: 	the alias name of the type of the element as it is defined in the configuration file. If no elementmapping is specified the alias is equal to the type.
+	-->
+	<xsl:template name="elementTypeAlias">
 		<xsl:param name="type"/>
 		<xsl:choose>
 			<xsl:when test="$config//elementmapping[@type = $type]">
@@ -510,7 +524,7 @@
 
 
 	<!-- template for creating an alias for the relationship type -->
-	<xsl:template name="relationshipalias">
+	<xsl:template name="relationshipTypeAlias">
 		<xsl:param name="relationship"/>
 		<xsl:param name="direction"/>
 		<xsl:variable name="sourceElementType"
@@ -529,7 +543,7 @@
 				<xsl:value-of
 					select="$config//relationshipmapping[@type = $relationship/@type and @direction = $direction and @sourceType = 'any' and @targetType = 'any']/@alias"/>
 				<xsl:text>&#160;</xsl:text>
-				<xsl:call-template name="elementalias">
+				<xsl:call-template name="elementTypeAlias">
 					<xsl:with-param name="type">
 						<xsl:choose>
 							<xsl:when test="$direction = 'to'">
@@ -547,7 +561,7 @@
 				<xsl:text>&#160;</xsl:text>
 				<xsl:value-of select="$direction"/>
 				<xsl:text>&#160;</xsl:text>
-				<xsl:call-template name="elementalias">
+				<xsl:call-template name="elementTypeAlias">
 					<xsl:with-param name="type">
 						<xsl:choose>
 							<xsl:when test="$direction = 'to'">
@@ -682,15 +696,29 @@
 			</properties>
 		</xsl:variable>
 		<!-- the style of the node (only fill color) can be overridden depending on
-			- the element is the same type or any
+			- the element is the same type or 'any'
 			- one of the properties has an exact match on the name and value
 		-->
-		<xsl:variable name="overrideNodeStyle"
-			select="$config//nodestyle[elementcondition[type = $element/@type or @type = 'any']/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]"/>
+		<xsl:variable name="overrideNodeStyle">
+			<xsl:choose>
+				<xsl:when test="$config//nodestyle[elementcondition[@type = $element/@type]/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]">
+					<xsl:copy-of select="$config//nodestyle[elementcondition[@type = $element/@type]/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]"/>
+				</xsl:when>
+				<xsl:when test="$config//nodestyle[elementcondition[@type = 'all']/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]">
+					<xsl:copy-of select="$config//nodestyle[elementcondition[@type = 'all']/propertycondition[@name = $properties//property/@name and @value = $properties//property/@value]]"/>
+				</xsl:when>
+				<xsl:when test="$config//nodestyle[elementcondition[@type = $element/@type]]">
+					<xsl:copy-of select="$config//nodestyle[elementcondition[@type = $element/@type]]"/>
+				</xsl:when>
+				<xsl:when test="$config//nodestyle[elementcondition[@type = 'all']]">
+					<xsl:copy-of select="$config//nodestyle[elementcondition[@type = 'all']]"/>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
 		<xsl:variable name="fillColor">
 			<xsl:choose>
-				<xsl:when test="$overrideNodeStyle">
-					<xsl:value-of select="$overrideNodeStyle/fillColor"/>
+				<xsl:when test="$overrideNodeStyle//fillColor">
+					<xsl:value-of select="$overrideNodeStyle//fillColor"/>
 				</xsl:when>
 				<xsl:when test="arc:style/arc:fillColor">
 					<xsl:value-of
@@ -703,7 +731,6 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		
 		<xsl:variable name="strokeColor">
 			<xsl:choose>
 				<xsl:when test="arc:style/arc:strokeColor">
@@ -772,10 +799,13 @@
 					</xsl:choose>
 					<!-- set the text -->
 					<xsl:variable name="stereotype"><xsl:value-of select="//arc:specializedConceptDefinition[@identifier=$element/@specializationref]/arc:label"/></xsl:variable>
-					<text text-anchor="middle" x="{$x1+5}" y="{$y1+8}" width="{$w+-60}"
+					<text text-anchor="middle" x="{$x1 + 5}" y="{$y1 + 8}" width="{$w - 60}"
 						font-size="12">
 						<xsl:if test="$stereotype != ''">&lt;&lt;<xsl:value-of select="$stereotype"/>&gt;&gt;</xsl:if>
-						<xsl:value-of select="$element/arc:label"/>
+						<xsl:call-template name="elementLabel">
+							<xsl:with-param name="element" select="$element"/>
+							<xsl:with-param name="context">node</xsl:with-param>
+						</xsl:call-template>
 					</text>
 					<!-- set the node symbol -->
 					<xsl:choose>
@@ -909,7 +939,63 @@
 		<xsl:apply-templates select="arc:node"/>
 
 	</xsl:template>
-
+	
+	<!-- Create the customized label for an element -->
+	<xsl:template name="elementLabel">
+		<xsl:param name="element"/>
+		<xsl:param name="context"/>
+		<xsl:if test="$config/configuration/elementLabel[@includeGrouping='true' and @context=$context]">
+			<xsl:variable name="elementGroupName">
+				<xsl:call-template name="elementGroupName">
+					<xsl:with-param name="element" select="$element"/>
+				</xsl:call-template>
+			</xsl:variable>
+			<xsl:if test="$elementGroupName != ''">
+				[<xsl:value-of select="$elementGroupName"/>]<xsl:text> </xsl:text>
+			</xsl:if>
+		</xsl:if>
+		<xsl:value-of select="$element/arc:label"/>
+		<xsl:if test="$config/configuration/elementLabel[@includeType='true' and @context=$context]">
+			<xsl:text> </xsl:text>
+			(<xsl:call-template name="elementTypeAlias">
+				<xsl:with-param name="type" select="$element/@type"/>
+			</xsl:call-template>)
+		</xsl:if>
+	</xsl:template>
+	
+	<!-- 
+		Create the group name for the element.
+	-->
+	<xsl:template name="elementGroupName">
+		<xsl:param name="element"></xsl:param>
+		<xsl:variable name="groupName">
+			<xsl:choose>
+				<xsl:when test="$element/@type='SystemSoftware'">
+					<xsl:value-of select="//arc:element[@identifier = //arc:relationship[@target=$element/@identifier and @type='AssignmentRelationship']/@source]/arc:label"/>
+				</xsl:when>
+				<xsl:when test="$element/@type='Artifact'">
+					<xsl:value-of select="//arc:element[@identifier = //arc:relationship[@target=$element/@identifier and @type='AssignmentRelationship']/@source]/arc:label"/>
+				</xsl:when>
+				<xsl:when test="$element/@type='InfrastructureService' and //arc:relationship[@target=$element/@identifier and @type='RealisationRelationship']">
+					<xsl:value-of select="//arc:element[@identifier = //arc:relationship[@target=$element/@identifier and @type='RealisationRelationship']/@source]/arc:label"/>
+				</xsl:when>
+				<xsl:when test="$element/@type='InfrastructureService'">
+					<xsl:call-template name="elementGroupName">
+						<xsl:with-param name="element" select="//arc:element[@identifier = //arc:relationship[@source=$element/@identifier and @type='UsedByRelationship']/@target]"/>
+					</xsl:call-template>
+				</xsl:when>
+				<xsl:when test="$element/@type='ApplicationFunction'">
+					<xsl:value-of select="//arc:element[@identifier = //arc:relationship[@target=$element/@identifier and @type='AssignmentRelationship']/@source]/arc:label"/>
+				</xsl:when>
+				<xsl:when test="$element/@type='ApplicationService'">
+					<xsl:call-template name="elementGroupName">
+						<xsl:with-param name="element"  select="//arc:element[@identifier = //arc:relationship[@target=$element/@identifier and @type='RealisationRelationship']/@source]"/>
+					</xsl:call-template>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:value-of select="$groupName"/>
+	</xsl:template>
 
 	<xsl:template name="svgconnection">
 		<xsl:variable name="relationshipid" select="@relationshipref"/>
