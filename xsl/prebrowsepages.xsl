@@ -351,84 +351,116 @@
 					<!-- Create the relationships structure for both the report and browse parts -->
 					<xsl:variable name="relationships">
 						<xsl:call-template name="elementRelationships">
-							<xsl:with-param name="id" select="$id"/>	
+							<xsl:with-param name="element" select="."/>	
 						</xsl:call-template>		
 					</xsl:variable>
 					<!-- Create the report part -->
-					<div id="listed" style="display:none">
-						<xsl:for-each select="$relationships//type">
-							<h5>
-								<xsl:value-of select="@name"/>
-							</h5>
-							<table class="table table-hover table-condensed small">
-								<xsl:for-each select="element">
-									<tr class="{@overridingClass}">
-										<td>
-											<a href="browsepage-{@id}.html">
-												<xsl:value-of select="@name"/>
-											</a>
-										</td>
-										<td class="documentation">
-											<xsl:value-of select="elementDocumentation"/>
-										</td>
-										<td class="documentation">
-											<xsl:value-of select="documentation"/>
-										</td>
-									</tr>
-								</xsl:for-each>
-							</table>
-						</xsl:for-each>
-					</div>
+					<xsl:call-template name="reportPart">
+						<xsl:with-param name="relationships" select="$relationships"/>
+					</xsl:call-template>
 					<!-- Create the browse panel -->
-					<div id="tabbed">
-						<div role="tabpanel">
-							<ul class="nav nav-tabs" role="tablist">
-								<xsl:for-each select="$relationships//type">
-									<li role="presentation">
-										<xsl:if test="position() = 1">
-											<xsl:attribute name="class">active</xsl:attribute>
-										</xsl:if>
-										<a href="#{position()}" aria-controls="{@name}" role="tab"
-											data-toggle="tab">
-											<xsl:value-of select="@name"/>
-										</a>
-									</li>
-								</xsl:for-each>
-							</ul>
-						</div>
-						<div class="tab-content">
-							<xsl:for-each select="$relationships//type">
-								<div role="tabpanel" class="tab-pane" id="{position()}">
-									<xsl:if test="position() = 1">
-										<xsl:attribute name="class">tab-pane active</xsl:attribute>
-									</xsl:if>
-									<table class="table table-hover table-condensed small">
-										<xsl:for-each select="element">
-											<tr class="{@overridingClass}">
-												<td>
-												<a href="browsepage-{@id}.html">
-												<xsl:value-of select="@name"/>
-												</a>
-												</td>
-												<td class="documentation">
-												<xsl:value-of select="elementDocumentation"/>
-												</td>
-												<td class="documentation">
-												<xsl:value-of select="documentation"/>
-												</td>
-											</tr>
-										</xsl:for-each>
-									</table>
-								</div>
-							</xsl:for-each>
-						</div>
-					</div>
+					<xsl:call-template name="browsePart">
+						<xsl:with-param name="relationships" select="$relationships"/>
+					</xsl:call-template>
 				</div>
 			</div>
 		</div>
 	</xsl:template>
+	
+	<xsl:template name="browsePart">
+		<xsl:param name="relationships"/>
+		<div id="tabbed">
+			<div role="tabpanel">
+				<ul class="nav nav-tabs" role="tablist">
+					<xsl:for-each select="$relationships//type">
+						<li role="presentation">
+							<xsl:if test="position() = 1">
+								<xsl:attribute name="class">active</xsl:attribute>
+							</xsl:if>
+							<a href="#{position()}" aria-controls="{@name}" role="tab"
+								data-toggle="tab">
+								<xsl:value-of select="@name"/>
+							</a>
+						</li>
+					</xsl:for-each>
+				</ul>
+			</div>
+			<div class="tab-content">
+				<xsl:for-each select="$relationships//type">
+					<div role="tabpanel" class="tab-pane" id="{position()}">
+						<xsl:if test="position() = 1">
+							<xsl:attribute name="class">tab-pane active</xsl:attribute>
+						</xsl:if>
+						<table class="table table-hover table-condensed small">
+							<xsl:for-each select="element">
+								<tr class="{@overridingClass}">
+									<td>
+										<a href="browsepage-{@id}.html">
+											<xsl:value-of select="@name"/>
+										</a>
+									</td>
+									<td class="documentation">
+										<xsl:value-of select="elementDocumentation"/>
+									</td>
+									<td class="documentation">
+										<xsl:value-of select="documentation"/>
+									</td>
+								</tr>
+							</xsl:for-each>
+						</table>
+					</div>
+				</xsl:for-each>
+			</div>
+		</div>
+	</xsl:template>
+	
+	<xsl:template name="reportPart">
+		<xsl:param name="relationships"/>
+		<div id="listed" style="display:none">
+			<xsl:for-each select="$relationships//type">
+				<h5>
+					<xsl:value-of select="@name"/>
+				</h5>
+				<table class="table table-hover table-condensed small">
+					<xsl:for-each select="element">
+						<tr class="{@overridingClass}">
+							<td>
+								<a href="browsepage-{@id}.html">
+									<xsl:value-of select="@name"/>
+								</a>
+							</td>
+							<td class="documentation">
+								<xsl:value-of select="elementDocumentation"/>
+							</td>
+							<td class="documentation">
+								<xsl:value-of select="documentation"/>
+							</td>
+						</tr>
+					</xsl:for-each>
+				</table>
+			</xsl:for-each>
+		</div>
+	</xsl:template>
+	
+	
+	
+	<!--
+		Create an xml structure for the relationships of the elements
+		
+		input: element id
+		output:
+			<relationships>
+				<type @name>
+					<element @id @name @overridingClass>
+						<elementDocumentation/>
+						<documentation/>
+					</element>
+				</type>
+			</relationships>
+	-->
 	<xsl:template name="elementRelationships">
-		<xsl:param name="id"/>
+		<xsl:param name="element"/>
+		<xsl:variable name="id" select="$element/@identifier"/>
 		<relationships>
 			<type name="Views">
 				<xsl:for-each
