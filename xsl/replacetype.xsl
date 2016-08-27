@@ -15,19 +15,15 @@
         </xsl:copy>
     </xsl:template>
     
-    <!-- Move xsi:type into type and replace CommunicationPath with Path -->
+    <!-- Move xsi:type into type -->
     <xsl:template match="arc:element/@xsi:type">
         <xsl:variable name="type" select="."/>
         <xsl:attribute name="type">
-         <xsl:choose>
-             <xsl:when test="$type='CommunicationPath'">Path</xsl:when>
-             <xsl:otherwise><xsl:value-of select="$type"/></xsl:otherwise>
-         </xsl:choose>
+            <xsl:value-of select="$type"/>
         </xsl:attribute>
-        
     </xsl:template>
     
-    <!-- Move xsi:type into type and replace UsedByRelationship into ServingRelationship -->
+    <!-- Move xsi:type into type  -->
     <xsl:template match="arc:relationship/@xsi:type">
         <xsl:variable name="type" select="."/>
         <xsl:attribute name="type">
