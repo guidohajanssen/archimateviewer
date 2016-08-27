@@ -1,4 +1,4 @@
-# archimateviewer
+# ArchiMate Viewer
 Viewer for Archimate models based on the Open Group ArchiMate Exchange Format version 2.1.
 If you want to know more about the exchange format go to http://www.opengroup.org/xsd/archimate/ 
 If you would like to try out the viewer online go to http://www.archimateviewer.nl
