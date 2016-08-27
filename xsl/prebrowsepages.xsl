@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:arc="http://www.opengroup.org/xsd/archimate" xmlns:svg="http://www.w3.org/2000/svg"
-	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:fn="http://www.w3.org/2005/xpath-functions">
+<xsl:stylesheet 
+	version="2.0" 
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:arc="http://www.opengroup.org/xsd/archimate" 
+	xmlns:svg="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dc="http://purl.org/dc/elements/1.1/" 
+	xmlns:fn="http://www.w3.org/2005/xpath-functions">
 	
+	<!-- the folder in which the html pages are gererated -->
 	<xsl:param name="folder"/>
+	<!-- the configuration file -->
 	<xsl:param name="configfile"/>
 
+	<!-- the URI for the configuration file -->
 	<xsl:variable name="configURI">
 		<xsl:choose>
+			<!-- convert into URI for config file on Windows -->
 			<xsl:when test="contains($configfile,':')">
 				<xsl:value-of select="concat('file:///', replace($configfile, '\\', '/'))"/>
 			</xsl:when>
@@ -18,22 +27,27 @@
 		</xsl:choose>
 	</xsl:variable>
 	
+	<!-- the configuration document -->
 	<xsl:variable name="config" select="document($configURI)"/>
 	
+	<!-- the URI for the output folder -->
+	<xsl:variable name="folderURI">
+		<xsl:choose>
+			<xsl:when test="contains($folder,':')">
+				<xsl:value-of select="concat('file:///', replace($folder, '\\', '/'))"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$folder"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	
+	<!-- Place holder include for customization xsl. This will be replaced by the preprocess.xsl -->
 	<xsl:include href="../config/custom.xsl"/>
 
+	<!-- the template that will generate a page for each element and view -->
 	<xsl:template match="/arc:model">
 		<xsl:for-each select="//arc:element | //arc:view">
-			<xsl:variable name="folderURI">
-				<xsl:choose>
-					<xsl:when test="contains($folder,':')">
-						<xsl:value-of select="concat('file:///', replace($folder, '\\', '/'))"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="$folder"/>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:variable>
 			<xsl:result-document method="html"
 				href="{$folderURI}/browsepage-{@identifier}.html">
 				<html>
@@ -65,9 +79,9 @@
 							        content: none;
 							    }
 							}
-						<!-- generate some specific css defined in the configuration file -->
-                        <xsl:value-of select="$config//css"/>
-                    </style>
+							<!-- put some specific css defined in the configuration file -->
+                        	<xsl:value-of select="$config//css"/>
+                    	</style>
 					</head>
 					<body>
 						<div class="ui-layout-center">
