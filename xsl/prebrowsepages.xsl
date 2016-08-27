@@ -1005,6 +1005,9 @@
 				<xsl:when test="$element/@type='SystemSoftware'">
 					<xsl:value-of select="//arc:element[@identifier = //arc:relationship[@target=$element/@identifier and @type='AssignmentRelationship']/@source]/arc:label"/>
 				</xsl:when>
+				<xsl:when test="$element/@type='Device'">
+					<xsl:value-of select="$element/arc:label"/>
+				</xsl:when>
 				<xsl:when test="$element/@type='Artifact'">
 					<xsl:value-of select="//arc:element[@identifier = //arc:relationship[@target=$element/@identifier and @type='AssignmentRelationship']/@source]/arc:label"/>
 				</xsl:when>
