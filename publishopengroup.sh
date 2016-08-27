@@ -4,6 +4,10 @@
 #  
 #   creates a site based on the open group archimate exchange file format
 #
+#   1: Open Group ArchiMate Exchange Format file
+#   2: Name of the model website
+#   3: Configuration file
+#   4: Name of the XSL customization file
 
 echo "preprocessing the xsl files for site generation"
 rm -rf output/xsl
