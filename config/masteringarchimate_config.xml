@@ -1,4 +1,4 @@
-<configuration>
+<configuration archimateVersion='3.0'>
     <elementLabel context="node" includeGrouping='true' includeType='true'/>
     <elementLabel context="element" includeGrouping='true' includeType='true'/>
     <elementLabel context="relationship" includeGrouping='true' includeType='false'/>
@@ -26,13 +26,26 @@
         <relationshipmapping sourceType="any" targetType="any" type="UsedByRelationship"
             direction="from" alias="uses"/>
         <relationshipmapping sourceType="any" targetType="any" type="CompositionRelationship"
-            direction="from" alias="is composed of"/>
+            direction="from" alias="is part of"/>
         <relationshipmapping sourceType="any" targetType="any" type="CompositionRelationship"
             direction="to" alias="contains"/>
         <relationshipmapping sourceType="any" targetType="any" type="AggregationRelationship"
-            direction="from" alias="is parts of"/>
+            direction="from" alias="is part of"/>
         <relationshipmapping sourceType="any" targetType="any" type="AggregationRelationship"
             direction="to" alias="contains"/>
+        <relationshipmapping sourceType="any" targetType="any" type="RealisationRelationship"
+            direction="from" alias="is realised by"/>
+        <relationshipmapping sourceType="any" targetType="any" type="RealisationRelationship"
+            direction="to" alias="realises"/>
+        <relationshipmapping sourceType="any" targetType="any" type="AccessRelationship"
+            direction="from" alias="is accessed by"/>
+        <relationshipmapping sourceType="any" targetType="any" type="AccessRelationship"
+            direction="to" alias="accesses"/>
+        
+        <relationshipmapping sourceType="any" targetType="any" type="ServingRelationship"
+            direction="to" alias="services"/>
+        <relationshipmapping sourceType="any" targetType="any" type="UsedByRelationship"
+            direction="from" alias="is serviced by"/>
         <!-- specific mappings -->
         <relationshipmapping sourceType="Node" targetType="Artifact" type="AssignmentRelationship"
             direction="from" alias="resides on"/>

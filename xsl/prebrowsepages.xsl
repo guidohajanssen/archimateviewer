@@ -30,6 +30,8 @@
 	<!-- the configuration document -->
 	<xsl:variable name="config" select="document($configURI)"/>
 	
+	<xsl:variable name="archimateVersion" select="$config/configuration/@archimateVersion"/>
+	
 	<!-- the URI for the output folder -->
 	<xsl:variable name="folderURI">
 		<xsl:choose>
@@ -455,9 +457,7 @@
 			</xsl:for-each>
 		</div>
 	</xsl:template>
-	
-	
-	
+
 	<!--
 		Create an xml structure for the relationships of the elements
 		
@@ -820,7 +820,7 @@
 						</xsl:when>
 						<xsl:when test="$element/@type = 'Value'">
 							<!-- need to set width for text wrapping -->
-							<ellipse cx="{$x2 div 2}" cy="{$y2 div 2}" width="{$w}"
+							<ellipse cx="{$x1 + $w div 2}" cy="{$y1 + $h div 2}" width="{$w}"
 								rx="{$w div 2}" ry="{$h div 2}" style="{$svgStyle}"/>
 						</xsl:when>
 						<xsl:when test="$element/@type = 'Product'">
@@ -844,10 +844,10 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					<!-- set the text -->
-					<xsl:variable name="stereotype"><xsl:value-of select="//arc:specializedConceptDefinition[@identifier=$element/@specializationref]/arc:label"/></xsl:variable>
+					<!--xsl:variable name="stereotype"><xsl:value-of select="//arc:specializedConceptDefinition[@identifier=$element/@specializationref]/arc:label"/></xsl:variable-->
 					<text text-anchor="middle" x="{$x1 + 5}" y="{$y1 + 8}" width="{$w - 60}"
 						font-size="12">
-						<xsl:if test="$stereotype != ''">&lt;&lt;<xsl:value-of select="$stereotype"/>&gt;&gt;</xsl:if>
+						<!--xsl:if test="$stereotype != ''">&lt;&lt;<xsl:value-of select="$stereotype"/>&gt;&gt;</xsl:if-->
 						<xsl:call-template name="elementLabel">
 							<xsl:with-param name="element" select="$element"/>
 							<xsl:with-param name="context">node</xsl:with-param>
@@ -962,6 +962,8 @@
 						<xsl:when test="$element/@type = 'Principle'"> </xsl:when>
 						<xsl:when test="$element/@type = 'Requirement'"> </xsl:when>
 						<xsl:when test="$element/@type = 'Constraint'"> </xsl:when>
+						<xsl:when test="$element/@type = 'CommunicationPath'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Network'"> </xsl:when>
 					</xsl:choose>
 				</a>
 			</xsl:when>
@@ -1096,8 +1098,16 @@
 					url(#markerOpenArrow);</xsl:when>
 				<xsl:when test="$relationship/@type = 'AccessRelationship'">marker-end:
 					url(#markerOpenArrow);</xsl:when>
-				<xsl:when test="$relationship/@type = 'AssignmentRelationship'">marker-end:
-					url(#markerCircleEnd);</xsl:when>
+				<xsl:when test="$relationship/@type = 'AssignmentRelationship'">
+					<xsl:choose>
+						<xsl:when test="$archimateVersion='3.0'">
+							marker-end:url(#markerClosedArrow);
+						</xsl:when>
+						<xsl:otherwise>
+							marker-end:url(#markerCircleEnd);
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:when>
 				<xsl:when test="$relationship/@type = 'RealisationRelationship'">marker-end:
 					url(#markerOpenBlockArrow);</xsl:when>
 				<xsl:when test="$relationship/@type = 'SpecialisationRelationship'">marker-end:
@@ -1106,8 +1116,18 @@
 					url(#markerClosedArrow);</xsl:when>
 				<xsl:when test="$relationship/@type = 'FlowRelationship'">marker-end:
 					url(#markerClosedArrow);</xsl:when>
-				<xsl:when test="$relationship/@type = 'InfluenceRelationship'">marker-end:
-					url(#markerClosedArrow);</xsl:when>
+				<xsl:when test="$relationship/@type = 'InfluenceRelationship'">
+					<xsl:choose>
+						<xsl:when test="$archimateVersion='3.0'">
+							marker-end:url(#markerOpenArrow);
+						</xsl:when>
+						<xsl:otherwise>
+							marker-end:url(#markerClosedArrow);
+						</xsl:otherwise>
+					</xsl:choose></xsl:when>
+				<!-- 3.0 support -->
+				<xsl:when test="$relationship/@type = 'ServingRelationship'">marker-end:
+					url(#markerOpenArrow);</xsl:when>
 			</xsl:choose>
 		</xsl:variable>
 		<!-- select the line dash if necessary -->
@@ -1118,6 +1138,8 @@
 				<xsl:when test="$relationship/@type = 'RealisationRelationship'"
 					>stroke-dasharray:5,3;</xsl:when>
 				<xsl:when test="$relationship/@type = 'FlowRelationship'"
+					>stroke-dasharray:5,3;</xsl:when>
+				<xsl:when test="$relationship/@type = 'InfluenceRelationship'"
 					>stroke-dasharray:5,3;</xsl:when>
 			</xsl:choose>
 		</xsl:variable>
