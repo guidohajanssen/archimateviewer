@@ -844,8 +844,17 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					<!-- set the text -->
+					<xsl:variable name="textY">
+						<xsl:choose>
+							<xsl:when
+								test="$element/@type = 'DataObject' or $element/@type = 'BusinessObject'">
+								<xsl:value-of select="$y1 + 8"/>
+							</xsl:when>
+							<xsl:otherwise><xsl:value-of select="$y1 + 4"/></xsl:otherwise>
+						</xsl:choose>
+					</xsl:variable>
 					<!--xsl:variable name="stereotype"><xsl:value-of select="//arc:specializedConceptDefinition[@identifier=$element/@specializationref]/arc:label"/></xsl:variable-->
-					<text text-anchor="middle" x="{$x1 + 5}" y="{$y1 + 8}" width="{$w - 60}"
+					<text text-anchor="middle" x="{$x1 + 5}" y="{$textY}" width="{$w - 60}"
 						font-size="12">
 						<!--xsl:if test="$stereotype != ''">&lt;&lt;<xsl:value-of select="$stereotype"/>&gt;&gt;</xsl:if-->
 						<xsl:call-template name="elementLabel">
@@ -865,14 +874,14 @@
 							<path
 								d="M{$x2 - 18},{$y1 + 8} L{$x2 - 15},{$y1 + 5} h10 v10 L{$x2 - 8},{$y1 + 18}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<line x1="{$x2+-5}" y1="{$y1+5}" x2="{$x2+-8}" y2="{$y1+8}"
+							<line x1="{$x2 - 5}" y1="{$y1+5}" x2="{$x2 - 8}" y2="{$y1+8}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<rect x="{$x2+-18}" y="{$y1+8}" width="10" height="10"
+							<rect x="{$x2 - 18}" y="{$y1+8}" width="10" height="10"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
 						<xsl:when test="$element/@type = 'Device'">
 							<path
-								d="M{$x2+-17},{$y1+18} L{$x2+-9},{$y1+11} L{$x2+-3},{$y1+18} L{$x2+-17},{$y1+18}"
+								d="M{$x2 - 17},{$y1+18} L{$x2 - 9},{$y1+11} L{$x2+-3},{$y1+18} L{$x2+-17},{$y1+18}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 							<rect x="{$x2+-15}" y="{$y1+5}" width="11" height="9"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
@@ -901,13 +910,13 @@
 						<xsl:when test="$element/@type = 'BusinessActor'">
 							<circle cx="{$x2+-9}" cy="{$y1+7}" r="3" fill="{$fillColor}"
 								stroke="black" stroke-width="1"/>
-							<line x1="{$x2+-9}" y1="{$y1+10}" x2="{$x2+-9}" y2="{$y1+16}"
+							<line x1="{$x2+-9}" y1="{$y1+10}" x2="{$x2+-9}" y2="{$y1+14}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 							<line x1="{$x2+-13}" y1="{$y1+12}" x2="{$x2+-5}" y2="{$y1+12}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<line x1="{$x2+-9}" y1="{$y1+16}" x2="{$x2+-13}" y2="{$y1+21}"
+							<line x1="{$x2+-9}" y1="{$y1+14}" x2="{$x2+-13}" y2="{$y1+19}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<line x1="{$x2+-9}" y1="{$y1+16}" x2="{$x2+-5}" y2="{$y1+21}"
+							<line x1="{$x2+-9}" y1="{$y1+14}" x2="{$x2+-5}" y2="{$y1+19}"
 								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
 						</xsl:when>
 						<xsl:when test="$element/@type = 'BusinessProcess'">
@@ -944,7 +953,7 @@
 						</xsl:when>
 						<xsl:when
 							test="$element/@type = 'BusinessFunction' or $element/@type = 'ApplicationFunction' or $element/@type = 'InfrastructureFunction'">
-							<path d="M{$x2 - 8},{$y1+5} l5,5 v5 l-5,-5 l-5,5 v-5 Z" fill="none"
+							<path d="M{$x2 - 11},{$y1+5} l5,5 v7 l-5,-5 l-5,5 v-7 Z" fill="none"
 								stroke="black" stroke-width="1"/>
 						</xsl:when>
 						<xsl:when
@@ -955,7 +964,10 @@
 						<xsl:when test="$element/@type = 'Meaning'"> </xsl:when>
 						<xsl:when test="$element/@type = 'Representation'"> </xsl:when>
 						<xsl:when test="$element/@type = 'Location'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Artifact'"> </xsl:when>
+						<xsl:when test="$element/@type = 'Artifact'"> 
+							<path d="M{$x2 - 14},{$y1+5} h5 l4,4 v10 h-9 Z M{$x2 - 9},{$y1+5} v4 h4" fill="{$fillColor}" stroke="black"
+								stroke-width="0.75"/>
+						</xsl:when>
 						<xsl:when test="$element/@type = 'Driver'"> </xsl:when>
 						<xsl:when test="$element/@type = 'Assessment'"> </xsl:when>
 						<xsl:when test="$element/@type = 'Goal'"> </xsl:when>
@@ -1032,7 +1044,7 @@
 				</xsl:when>
 				<xsl:when test="$element/@type='InfrastructureService'">
 					<xsl:call-template name="elementGroupName">
-						<xsl:with-param name="element" select="//arc:element[@identifier = //arc:relationship[@source=$element/@identifier and @type='UsedByRelationship']/@target]"/>
+						<xsl:with-param name="element" select="//arc:element[@identifier = //arc:relationship[@source=$element/@identifier and (@type='UsedByRelationship' or @type='ServingRelationship')]/@target]"/>
 					</xsl:call-template>
 				</xsl:when>
 				<xsl:when test="$element/@type='ApplicationFunction'">
