@@ -10,7 +10,8 @@
         <elementmapping type="BusinessActor" alias="Business Actor"/>
         <elementmapping type="BusinessRole" alias="Business Role"/>
         <elementmapping type="BusinessEvent" alias="Business Event"/>
-        
+        <elementmapping type="InfrastructureService" alias="Infrastructure Service"/>
+        <elementmapping type="InfrastructureService" stereotype="Exploitation Service" alias="Exploitation Service"/>
         <relationshipmapping sourceType="any" targetType="any" type="AssociationRelationship"
             direction="to" alias="relates to"/>
         <relationshipmapping sourceType="any" targetType="any" type="AssociationRelationship"

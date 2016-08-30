@@ -562,10 +562,18 @@
 		@return: 	the alias name of the type of the element as it is defined in the configuration file. If no elementmapping is specified the alias is equal to the type.
 	-->
 	<xsl:template name="elementTypeAlias">
-		<xsl:param name="type"/>
+		<xsl:param name="element"/>
+		<xsl:variable name="type" select="$element/@type"/>
+		
+		<xsl:variable name="typedMapping" select="$config//elementmapping[@type = $type and not(@stereotype)]"/>
+		<xsl:variable name="stereotypedMapping" select="$config//elementmapping[@type = $type and 
+			@stereotype = $element/arc:properties/arc:property[@identifierref = $stereotypePropertyDefinitionId]/arc:value]"/>
 		<xsl:choose>
-			<xsl:when test="$config//elementmapping[@type = $type]">
-				<xsl:value-of select="$config//elementmapping[@type = $type]/@alias"/>
+			<xsl:when test="$stereotypedMapping">
+				<xsl:value-of select="$stereotypedMapping/@alias"/>
+			</xsl:when>
+			<xsl:when test="$typedMapping">
+				<xsl:value-of select="$typedMapping/@alias"/>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$type"/>
@@ -578,10 +586,14 @@
 	<xsl:template name="relationshipTypeAlias">
 		<xsl:param name="relationship"/>
 		<xsl:param name="direction"/>
+		<xsl:variable name="sourceElement"
+			select="//arc:element[@identifier = $relationship/@source]"/>
+		<xsl:variable name="targetElement"
+			select="//arc:element[@identifier = $relationship/@target]"/>
 		<xsl:variable name="sourceElementType"
-			select="//arc:element[@identifier = $relationship/@source]/@type"/>
+			select="$sourceElement/@type"/>
 		<xsl:variable name="targetElementType"
-			select="//arc:element[@identifier = $relationship/@target]/@type"/>
+			select="$targetElement/@type"/>
 		<xsl:choose>
 			<xsl:when
 				test="$config//relationshipmapping[@type = $relationship/@type and @direction = $direction and @sourceType = $sourceElementType and @targetType = $targetElementType]">
@@ -595,13 +607,13 @@
 					select="$config//relationshipmapping[@type = $relationship/@type and @direction = $direction and @sourceType = 'any' and @targetType = 'any']/@alias"/>
 				<xsl:text>&#160;</xsl:text>
 				<xsl:call-template name="elementTypeAlias">
-					<xsl:with-param name="type">
+					<xsl:with-param name="element">
 						<xsl:choose>
 							<xsl:when test="$direction = 'to'">
-								<xsl:value-of select="$targetElementType"/>
+								<xsl:value-of select="$targetElement"/>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:value-of select="$sourceElementType"/>
+								<xsl:value-of select="$sourceElement"/>
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:with-param>
@@ -613,13 +625,13 @@
 				<xsl:value-of select="$direction"/>
 				<xsl:text>&#160;</xsl:text>
 				<xsl:call-template name="elementTypeAlias">
-					<xsl:with-param name="type">
+					<xsl:with-param name="element">
 						<xsl:choose>
 							<xsl:when test="$direction = 'to'">
-								<xsl:value-of select="$targetElementType"/>
+								<xsl:value-of select="$targetElement"/>
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:value-of select="$sourceElementType"/>
+								<xsl:value-of select="$sourceElement"/>
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:with-param>
@@ -1119,7 +1131,7 @@
 		<xsl:if test="$config/configuration/elementLabel[@includeType='true' and @context=$context]">
 			<xsl:text> </xsl:text>
 			(<xsl:call-template name="elementTypeAlias">
-				<xsl:with-param name="type" select="$element/@type"/>
+				<xsl:with-param name="element" select="$element"/>
 			</xsl:call-template>)
 		</xsl:if>
 	</xsl:template>
