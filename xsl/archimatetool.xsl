@@ -188,7 +188,7 @@
 				$type='archimate:BusinessObject'">
 				<arc:style>
 					<arc:fillColor r="255" g="255" b="181" />
-					<arc:lineColor r="92" g="92" b="92" />
+					<arc:lineColor r="223" g="223" b="163" />
 				</arc:style>
 			</xsl:when>
 			<xsl:when test="$type='archimate:ApplicationComponent' or 
@@ -200,7 +200,7 @@
 				$type='archimate:DataObject'">
 				<arc:style>
 					<arc:fillColor r="181" g="255" b="255" />
-					<arc:lineColor r="92" g="92" b="92" />
+					<arc:lineColor r="163" g="223" b="223" />
 				</arc:style>
 			</xsl:when>
 			<xsl:when test="$type='archimate:Device' or 
@@ -215,7 +215,7 @@
 				">
 				<arc:style>
 					<arc:fillColor r="201" g="231" b="183" />
-					<arc:lineColor r="92" g="92" b="92" />
+					<arc:lineColor r="181" g="208" b="165" />
 				</arc:style>
 			</xsl:when>
 			<xsl:when test="$type='archimate:Principle' or 
@@ -225,7 +225,7 @@
 				">
 				<arc:style>
 					<arc:fillColor r="204" g="204" b="255" />
-					<arc:lineColor r="92" g="92" b="92" />
+					<arc:lineColor r="{204 * 0.9}" g="{204 * 0.9}" b="{255 * 0.9}" />
 				</arc:style>
 			</xsl:when>
 			<xsl:when test="$type='archimate:Gap' or 
@@ -233,7 +233,7 @@
 				">
 				<arc:style>
 					<arc:fillColor r="224" g="255" b="224" />
-					<arc:lineColor r="92" g="92" b="92" />
+					<arc:lineColor r="{224 * 0.9}" g="{255 * 0.9}" b="{224 * 0.9}" />
 				</arc:style>
 			</xsl:when>
 			<xsl:when test="$type='archimate:Workpackage' or 
@@ -241,7 +241,7 @@
 				">
 				<arc:style>
 					<arc:fillColor r="255" g="224" b="224" />
-					<arc:lineColor r="92" g="92" b="92" />
+					<arc:lineColor r="{255 * 0.9}" g="{244 * 0.9}" b="{244 * 0.9}" />
 				</arc:style>
 			</xsl:when>
 			<xsl:when test="$type='archimate:Stakeholder' or 
@@ -250,7 +250,7 @@
 				">
 				<arc:style>
 					<arc:fillColor r="191" g="223" b="255" />
-					<arc:lineColor r="92" g="92" b="92" />
+					<arc:lineColor r="{191 * 0.9}" g="{223 * 0.9}" b="{255 * 0.9}" />
 				</arc:style>
 			</xsl:when>
 			<xsl:when test="$type='archimate:AndJunction' 
@@ -270,7 +270,7 @@
 			<xsl:otherwise>
 				<arc:style>
 					<arc:fillColor r="192" g="192" b="192" />
-					<arc:lineColor r="92" g="92" b="92" />
+					<arc:lineColor r="{192 * 0.9}" g="{192 * 0.9}" b="{192 * 0.9}" />
 				</arc:style>
 			</xsl:otherwise>
 		</xsl:choose>
