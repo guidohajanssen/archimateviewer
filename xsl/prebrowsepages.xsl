@@ -675,56 +675,59 @@
 						<rect x="0" y="0" width="{$maxwidth+25}" height="{$maxheight+25}"
 							style="stroke:black; fill:none"/>
 						<!-- definition of the connection start and end shapes -->
-						<defs>
-							<marker id="markerCircleEnd" markerWidth="8" markerHeight="8" refX="8"
-								refY="5" orient="auto">
-								<circle cx="5" cy="5" r="3" style="stroke: none; fill:#000000;"/>
-							</marker>
-							<marker id="markerCircleStart" markerWidth="8" markerHeight="8" refX="2"
-								refY="5" orient="auto">
-								<circle cx="5" cy="5" r="3" style="stroke: none; fill:#000000;"/>
-							</marker>
-							<marker id="markerOpenDiamond" markerWidth="16" markerHeight="16"
-								refX="2" refY="5" orient="auto">
-								<path d="M10,1 L3,5 L10,9 L18,5 Z"
-									style="fill: white; stroke:black; stroke-width:1"/>
-							</marker>
-							<marker id="markerClosedDiamond" markerWidth="16" markerHeight="16"
-								refX="2" refY="5" orient="auto">
-								<path d="M10,1 L3,5 L10,9 L18,5 Z"
-									style="fill: black; stroke:black; stroke-width:1"/>
-							</marker>
-							<marker id="markerClosedBlockArrow" markerWidth="13" markerHeight="13"
-								refX="10" refY="6" orient="auto">
-								<path d="M0,0 L9,6 L0,12 Z"
-									style="stroke:black; stroke-width:1; fill: black; "/>
-							</marker>
-							<marker id="markerOpenBlockArrow" markerWidth="13" markerHeight="13"
-								refX="10" refY="6" orient="auto">
-								<path d="M0,0 L9,6 L0,12 Z"
-									style="stroke:black; stroke-width:1; stroke-dasharray:1,0; fill: white; "/>
-							</marker>
-							<marker id="markerOpenArrow" markerWidth="13" markerHeight="13"
-								refX="10" refY="6" orient="auto">
-								<path d="M2,2 L9,6 L2,10"
-									style="fill: none; stroke: black; stroke-dasharray:1,0; stroke-width:1"/>
-							</marker>
-							<marker id="markerClosedArrow" markerWidth="13" markerHeight="13"
-								refX="10" refY="6" orient="auto">
-								<path d="M2,2 L9,6 L2,10 Z"
-									style="fill: black; stroke: black; stroke-dasharray:1,0;stroke-width:1"/>
-							</marker>
-						</defs>
-						<!-- create all the nodes -->
+						<xsl:call-template name="markers"/>
+						<!-- draw all the nodes -->
 						<xsl:apply-templates select="arc:node"/>
-						<!-- create all the connections -->
-						<xsl:for-each select="arc:connection">
-							<xsl:call-template name="svgconnection"/>
-						</xsl:for-each>
-					</svg>
+						<!-- draw all the connections -->
+						<xsl:apply-templates select="arc:connection"/></svg>
 				</div>
 			</div>
 		</div>
+	</xsl:template>
+	
+	<!-- 
+		Create the connection markers 
+	-->
+	<xsl:template name="markers">
+		<defs>
+			<marker id="markerCircleEnd" markerWidth="8" markerHeight="8" refX="8" refY="5"
+				orient="auto">
+				<circle cx="5" cy="5" r="3" style="stroke: none; fill:#000000;"/>
+			</marker>
+			<marker id="markerCircleStart" markerWidth="8" markerHeight="8" refX="2" refY="5"
+				orient="auto">
+				<circle cx="5" cy="5" r="3" style="stroke: none; fill:#000000;"/>
+			</marker>
+			<marker id="markerOpenDiamond" markerWidth="16" markerHeight="16" refX="2" refY="5"
+				orient="auto">
+				<path d="M10,1 L3,5 L10,9 L18,5 Z" style="fill: white; stroke:black; stroke-width:1"
+				/>
+			</marker>
+			<marker id="markerClosedDiamond" markerWidth="16" markerHeight="16" refX="2" refY="5"
+				orient="auto">
+				<path d="M10,1 L3,5 L10,9 L18,5 Z" style="fill: black; stroke:black; stroke-width:1"
+				/>
+			</marker>
+			<marker id="markerClosedBlockArrow" markerWidth="13" markerHeight="13" refX="10"
+				refY="6" orient="auto">
+				<path d="M0,0 L9,6 L0,12 Z" style="stroke:black; stroke-width:1; fill: black; "/>
+			</marker>
+			<marker id="markerOpenBlockArrow" markerWidth="13" markerHeight="13" refX="10" refY="6"
+				orient="auto">
+				<path d="M0,0 L9,6 L0,12 Z"
+					style="stroke:black; stroke-width:1; stroke-dasharray:1,0; fill: white; "/>
+			</marker>
+			<marker id="markerOpenArrow" markerWidth="13" markerHeight="13" refX="10" refY="6"
+				orient="auto">
+				<path d="M2,2 L9,6 L2,10"
+					style="fill: none; stroke: black; stroke-dasharray:1,0; stroke-width:1"/>
+			</marker>
+			<marker id="markerClosedArrow" markerWidth="13" markerHeight="13" refX="10" refY="6"
+				orient="auto">
+				<path d="M2,2 L9,6 L2,10 Z"
+					style="fill: black; stroke: black; stroke-dasharray:1,0;stroke-width:1"/>
+			</marker>
+		</defs>
 	</xsl:template>
 
 	<xsl:template match="arc:node">
@@ -761,15 +764,16 @@
 				</xsl:when>
 			</xsl:choose>
 		</xsl:variable>
+		
 		<xsl:variable name="fillColor">
 			<xsl:choose>
 				<xsl:when test="$overrideNodeStyle//fillColor">
 					<xsl:value-of select="$overrideNodeStyle//fillColor"/>
 				</xsl:when>
 				<xsl:when test="arc:style/arc:fillColor">
-					<xsl:value-of
-						select="concat('rgb(', arc:style/arc:fillColor/@r, ',', arc:style/arc:fillColor/@g, ',', arc:style/arc:fillColor/@b, ')')"
-					/>
+					<xsl:call-template name="color">
+						<xsl:with-param name="color" select="arc:style/arc:fillColor"/>
+					</xsl:call-template>
 				</xsl:when>
 				<!-- set default node color to white -->
 				<xsl:otherwise>
@@ -777,9 +781,13 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
+		
 		<xsl:variable name="strokeColor">
 			<xsl:choose>
 				<xsl:when test="arc:style/arc:strokeColor">
+					<xsl:call-template name="color">
+						<xsl:with-param name="color" select="arc:style/arc:lineColor"/>
+					</xsl:call-template>
 					<xsl:value-of select="concat('rgb(', arc:style/arc:lineColor/@r, ',', arc:style/arc:lineColor/@g, ',', arc:style/arc:lineColor/@b, ')')"/>
 				</xsl:when>
 				<!-- set default stroke color to black -->
@@ -792,6 +800,7 @@
 		<xsl:variable name="svgStyle"
 			select="concat('fill:', $fillColor, '; stroke-width:1;', 'stroke:', $strokeColor, ';')"/>
 		
+		<!-- node coordindates -->
 		<xsl:variable name="x1" select="@x"/>
 		<xsl:variable name="y1" select="@y"/>
 		<xsl:variable name="w" select="@w"/>
@@ -808,187 +817,48 @@
 						<property id="Plateau" value="{$plateauElements/@arc:label}"/> 
 					</xsl:if>
 					<!-- create the node shape -->
-					<xsl:choose>
-						<xsl:when
-							test="
-								$element/@type = 'BusinessProcess' or $element/@type = 'BusinessInteraction' or $element/@type = 'BusinessFunction' or
-								$element/@type = 'BusinessService' or $element/@type = 'ApplicationService' or $element/@type = 'InfrastructureService' or
-								$element/@type = 'BusinessFunction' or $element/@type = 'ApplicationFunction' or $element/@type = 'InfrastructureFunction' or
-								$element/@type = 'BusinessEvent' or $element/@type = 'BusinessProcess'">
-							<rect x="{$x1}" y="{$y1}" rx="10" ry="10" width="{$w}" height="{$h}"
-								style="{$svgStyle}"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'Value'">
-							<!-- need to set width for text wrapping -->
-							<ellipse cx="{$x1 + $w div 2}" cy="{$y1 + $h div 2}" width="{$w}"
-								rx="{$w div 2}" ry="{$h div 2}" style="{$svgStyle}"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'Product'">
-							<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}"
-								style="{$svgStyle}"/>
-							<!-- need to set width for text wrapping -->
-							<path d="M{$x1},{$y1+6} h{$w div 2} v-6" width="{$w}"
-								style="{$svgStyle}"/>
-						</xsl:when>
-						<xsl:when
-							test="$element/@type = 'DataObject' or $element/@type = 'BusinessObject'">
-							<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}"
-								style="{$svgStyle}"/>
-							<!-- need to set width for text wrapping -->
-							<line x1="{$x1}" y1="{$y1+6}" x2="{$x2}" y2="{$y1+6}" width="{$w}"
-								style="{$svgStyle}"/>
-						</xsl:when>
-						<xsl:otherwise>
-							<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}"
-								style="{$svgStyle}"/>
-						</xsl:otherwise>
-					</xsl:choose>
+					<xsl:call-template name="nodeShape">
+						<xsl:with-param name="element" select="$element"/>
+						<xsl:with-param name="x1" select="$x1"/>
+						<xsl:with-param name="y1" select="$y1"/>
+						<xsl:with-param name="w" select="$w"/>
+						<xsl:with-param name="h" select="$h"/>
+						<xsl:with-param name="svgStyle" select="$svgStyle"/>
+					</xsl:call-template>
 					<!-- set the text -->
-					<xsl:variable name="textY">
-						<xsl:choose>
-							<xsl:when
-								test="$element/@type = 'DataObject' or $element/@type = 'BusinessObject'">
-								<xsl:value-of select="$y1 + 8"/>
-							</xsl:when>
-							<xsl:otherwise><xsl:value-of select="$y1 + 4"/></xsl:otherwise>
-						</xsl:choose>
-					</xsl:variable>
-					<!--xsl:variable name="stereotype"><xsl:value-of select="//arc:specializedConceptDefinition[@identifier=$element/@specializationref]/arc:label"/></xsl:variable-->
-					<text text-anchor="middle" x="{$x1 + 5}" y="{$textY}" width="{$w - 60}"
-						font-size="12">
-						<!--xsl:if test="$stereotype != ''">&lt;&lt;<xsl:value-of select="$stereotype"/>&gt;&gt;</xsl:if-->
-						<xsl:call-template name="elementLabel">
-							<xsl:with-param name="element" select="$element"/>
-							<xsl:with-param name="context">node</xsl:with-param>
-						</xsl:call-template>
-					</text>
+					<xsl:call-template name="nodeText">
+						<xsl:with-param name="element" select="$element"/>
+						<xsl:with-param name="y1" select="$y1"/>
+						<xsl:with-param name="x1" select="$x1"/>
+						<xsl:with-param name="w" select="$w"/>
+					</xsl:call-template>
 					<!-- set the node symbol -->
-					<xsl:choose>
-						<xsl:when test="$element/@type = 'SystemSoftware'">
-							<circle cx="{$x2 - 10}" cy="{$y1 + 10}" r="5" fill="{$fillColor}"
-								stroke="black" stroke-width="1"/>
-							<circle cx="{$x2 - 12}" cy="{$y1 + 12}" r="5" fill="{$fillColor}"
-								stroke="black" stroke-width="1"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'Node'">
-							<path
-								d="M{$x2 - 18},{$y1 + 8} L{$x2 - 15},{$y1 + 5} h10 v10 L{$x2 - 8},{$y1 + 18}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<line x1="{$x2 - 5}" y1="{$y1+5}" x2="{$x2 - 8}" y2="{$y1+8}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<rect x="{$x2 - 18}" y="{$y1+8}" width="10" height="10"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'Device'">
-							<path
-								d="M{$x2 - 17},{$y1+18} L{$x2 - 9},{$y1+11} L{$x2+-3},{$y1+18} L{$x2+-17},{$y1+18}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<rect x="{$x2+-15}" y="{$y1+5}" width="11" height="9"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'ApplicationComponent'">
-							<rect x="{$x2+-15}" y="{$y1+5}" width="10" height="14"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<rect x="{$x2+-18}" y="{$y1+7}" width="6" height="3" fill="{$fillColor}"
-								stroke="black" stroke-width="0.75"/>
-							<rect x="{$x2+-18}" y="{$y1+13}" width="6" height="3"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when
-							test="$element/@type = 'BusinessRole' or $element/@type = 'Stakeholder'">
-							<circle cx="{$x2+-17}" cy="{$y1+10}" r="4" fill="{$fillColor}"
-								stroke="black" stroke-width="1"/>
-							<rect x="{$x2+-17}" y="{$y1+5}" width="6" height="10"
-								fill="{$fillColor}" stroke="${fillColor}" stroke-width="0.75"/>
-							<circle cx="{$x2+-10}" cy="{$y1+10}" r="4" fill="{$fillColor}"
-								stroke="black" stroke-width="1"/>
-							<line x1="{$x2+-17}" y1="{$y1+6}" x2="{$x2+-11}" y2="{$y1+6}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<line x1="{$x2+-17}" y1="{$y1+14}" x2="{$x2+-11}" y2="{$y1+14}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'BusinessActor'">
-							<circle cx="{$x2+-9}" cy="{$y1+7}" r="3" fill="{$fillColor}"
-								stroke="black" stroke-width="1"/>
-							<line x1="{$x2+-9}" y1="{$y1+10}" x2="{$x2+-9}" y2="{$y1+14}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<line x1="{$x2+-13}" y1="{$y1+12}" x2="{$x2+-5}" y2="{$y1+12}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<line x1="{$x2+-9}" y1="{$y1+14}" x2="{$x2+-13}" y2="{$y1+19}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<line x1="{$x2+-9}" y1="{$y1+14}" x2="{$x2+-5}" y2="{$y1+19}"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'BusinessProcess'">
-							<path
-								d="M{$x2 - 18},{$y1+8} h9 v-3 L{$x2 - 5},{$y1+10} L{$x2 - 9},{$y1+15} v-3 h-9 Z"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'Contract'">
-							<rect x="{$x2 - 18}" y="{$y1+5}" width="12" height="10"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-							<path d="M{$x2 - 18},{$y1+8} h12" fill="{$fillColor}" stroke="black"
-								stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when
-							test="$element/@type = 'BusinessInteraction' or $element/@type = 'ApplicationInteraction'">
-							<path d="M{$x2 - 12} {$y1+6} A 5 5 0 0 0 {$x2 - 12} {$y1 + 16} Z"
-								fill="{$fillColor}" stroke="black" stroke-width="1"/>
-							<path d="M{$x2 - 9} {$y1+16} A 5 5 0 0 0 {$x2 - 9} {$y1 + 6} Z"
-								fill="{$fillColor}" stroke="black" stroke-width="1"/>
-						</xsl:when>
-						<xsl:when
-							test="$element/@type = 'BusinessCollaboration' or $element/@type = 'ApplicationCollaboration'">
-							<circle cx="{$x2 - 14}" cy="{$y1+11}" r="5" fill="none" stroke="black"
-								stroke-width="1"/>
-							<circle cx="{$x2 - 10}" cy="{$y1+11}" r="5" fill="none" stroke="black"
-								stroke-width="1"/>
-						</xsl:when>
-						<xsl:when
-							test="$element/@type = 'BusinessInterface' or $element/@type = 'ApplicationInterface' or $element/@type = 'InfrastructureInterface'">
-							<circle cx="{$x2 - 8}" cy="{$y1+10}" r="4" fill="{$fillColor}"
-								stroke="black" stroke-width="1"/>
-							<path d="M{$x2 - 13},{$y1+10} h-5" fill="none" stroke="black"
-								stroke-width="1"/>
-						</xsl:when>
-						<xsl:when
-							test="$element/@type = 'BusinessFunction' or $element/@type = 'ApplicationFunction' or $element/@type = 'InfrastructureFunction'">
-							<path d="M{$x2 - 11},{$y1+5} l5,5 v7 l-5,-5 l-5,5 v-7 Z" fill="none"
-								stroke="black" stroke-width="1"/>
-						</xsl:when>
-						<xsl:when
-							test="$element/@type = 'BusinessService' or $element/@type = 'ApplicationService' or $element/@type = 'InfrastructureService'">
-							<rect x="{$x2 - 22}" y="{$y1+5}" rx="3" ry="3" width="13" height="7"
-								fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'Meaning'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Representation'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Location'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Artifact'"> 
-							<path d="M{$x2 - 14},{$y1+5} h5 l4,4 v10 h-9 Z M{$x2 - 9},{$y1+5} v4 h4" fill="{$fillColor}" stroke="black"
-								stroke-width="0.75"/>
-						</xsl:when>
-						<xsl:when test="$element/@type = 'Driver'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Assessment'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Goal'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Principle'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Requirement'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Constraint'"> </xsl:when>
-						<xsl:when test="$element/@type = 'CommunicationPath'"> </xsl:when>
-						<xsl:when test="$element/@type = 'Network'"> </xsl:when>
-					</xsl:choose>
+					<xsl:call-template name="nodeSymbol">
+						<xsl:with-param name="element" select="$element"/>
+						<xsl:with-param name="nodeX2" select="$x2"/>
+						<xsl:with-param name="nodeY1" select="$y1"/>
+						<xsl:with-param name="fillColor" select="$fillColor"/>
+					</xsl:call-template>
 				</a>
 			</xsl:when>
 			<!-- draw group box -->
 			<xsl:when test="@type='group'">
 				<xsl:variable name="colorratio">0.9</xsl:variable>
+				<xsl:variable name="headerColor">
+					<xsl:call-template name="rgbColor">
+						<xsl:with-param name="r" select="fn:round(arc:style/arc:fillColor/@r * $colorratio)"/>
+						<xsl:with-param name="g" select="fn:round(arc:style/arc:fillColor/@g * $colorratio)"/>
+						<xsl:with-param name="b" select="fn:round(arc:style/arc:fillColor/@b * $colorratio)"/>
+					</xsl:call-template>
+				</xsl:variable>
 				<rect x="{$x1}" y="{$y1}" width="{$w div 2}" height="17"
-					style="fill:rgb({fn:round(arc:style/arc:fillColor/@r * $colorratio)},{fn:round(arc:style/arc:fillColor/@g * $colorratio)},{fn:round(arc:style/arc:fillColor/@b * $colorratio)}); strokewidth:1; stroke:{$strokeColor}"/>
+					style="fill:{$headerColor}; strokewidth:1; stroke:{$strokeColor}"/>
 				<rect x="{$x1}" y="{$y1+17}" width="{$w}" height="{$h - 16}" style="{$svgStyle}"/>
 				<text x="{$x1+5}" y="{$y1+2}" width="{$w}" font-size="12">
 					<xsl:value-of select="arc:label"/>
 				</text>
 			</xsl:when>
+			<!-- any other type of node -->
 			<xsl:otherwise>
 				<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svgStyle}"/>
 				<text x="{$x1+5}" y="{$y1+2}" width="{$w}" font-size="12">
@@ -996,8 +866,229 @@
 				</text>
 			</xsl:otherwise>
 		</xsl:choose>
+		<!-- draw nested nodes -->
 		<xsl:apply-templates select="arc:node"/>
-
+	</xsl:template>
+	
+	<!-- 
+		
+	-->
+	<xsl:template name="nodeText">
+		<xsl:param name="element"/>
+		<xsl:param name="y1"/>
+		<xsl:param name="x1"/>
+		<xsl:param name="w"/>
+		<xsl:variable name="textY">
+			<xsl:choose>
+				<xsl:when test="$element/@type = 'DataObject' or $element/@type = 'BusinessObject'">
+					<xsl:value-of select="$y1 + 8"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$y1 + 4"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<!--xsl:variable name="stereotype"><xsl:value-of select="//arc:specializedConceptDefinition[@identifier=$element/@specializationref]/arc:label"/></xsl:variable-->
+		<text text-anchor="middle" x="{$x1 + 5}" y="{$textY}" width="{$w - 60}" font-size="12">
+			<!--xsl:if test="$stereotype != ''">&lt;&lt;<xsl:value-of select="$stereotype"/>&gt;&gt;</xsl:if-->
+			<xsl:call-template name="elementLabel">
+				<xsl:with-param name="element" select="$element"/>
+				<xsl:with-param name="context">node</xsl:with-param>
+			</xsl:call-template>
+		</text>
+	</xsl:template>
+	
+	<!--
+		
+	-->
+	<xsl:template name="color">
+		<xsl:param name="color"/>
+		<xsl:call-template name="rgbColor">
+			<xsl:with-param name="r" select="$color/@r"/>
+			<xsl:with-param name="g" select="$color/@g"/>
+			<xsl:with-param name="b" select="$color/@b"/>
+		</xsl:call-template>	
+	</xsl:template>
+	
+	<!-- 
+		
+	-->
+	<xsl:template name="rgbColor">
+		<xsl:param name="r"/>
+		<xsl:param name="g"/>
+		<xsl:param name="b"/>
+		<xsl:value-of select="concat('rgb(', $r, ',', $g, ',', $b, ')')"/>	
+	</xsl:template>
+	
+	<!-- Create the shape of the node based on the type -->
+	<xsl:template name="nodeShape">
+		<xsl:param name="element"/>
+		<xsl:param name="x1"/>
+		<xsl:param name="y1"/>
+		<xsl:param name="w"/>
+		<xsl:param name="h"/>
+		<xsl:param name="svgStyle"/>
+		<xsl:variable name="x2" select="$x1 + $w"/>
+		<xsl:choose>
+			<xsl:when
+				test="
+					$element/@type = 'BusinessProcess' or $element/@type = 'BusinessInteraction' or $element/@type = 'BusinessFunction' or
+					$element/@type = 'BusinessService' or $element/@type = 'ApplicationService' or $element/@type = 'InfrastructureService' or
+					$element/@type = 'BusinessFunction' or $element/@type = 'ApplicationFunction' or $element/@type = 'InfrastructureFunction' or
+					$element/@type = 'BusinessEvent' or $element/@type = 'BusinessProcess'">
+				<rect x="{$x1}" y="{$y1}" rx="10" ry="10" width="{$w}" height="{$h}"
+					style="{$svgStyle}"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'Value'">
+				<!-- need to set width for text wrapping -->
+				<ellipse cx="{$x1 + $w div 2}" cy="{$y1 + $h div 2}" width="{$w}" rx="{$w div 2}"
+					ry="{$h div 2}" style="{$svgStyle}"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'Product'">
+				<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svgStyle}"/>
+				<!-- need to set width for text wrapping -->
+				<path d="M{$x1},{$y1+6} h{$w div 2} v-6" width="{$w}" style="{$svgStyle}"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'DataObject' or $element/@type = 'BusinessObject'">
+				<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svgStyle}"/>
+				<!-- need to set width for text wrapping -->
+				<line x1="{$x1}" y1="{$y1+6}" x2="{$x2}" y2="{$y1+6}" width="{$w}"
+					style="{$svgStyle}"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<rect x="{$x1}" y="{$y1}" width="{$w}" height="{$h}" style="{$svgStyle}"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	
+	<!--
+		
+	-->
+	<xsl:template name="nodeSymbol">
+		<xsl:param name="element"/>
+		<xsl:param name="nodeX2"/>
+		<xsl:param name="nodeY1"/>
+		<xsl:param name="fillColor"/>
+		<!-- symbol top left coordinates -->
+		<xsl:variable name="x1" select="$nodeX2 - 22"/>
+		<xsl:variable name="y1" select="$nodeY1 + 5"/>
+		<xsl:variable name="x2" select="$x1 + 17"/>
+		<xsl:variable name="y2" select="$y1 + 19"/>
+		<xsl:choose>
+			<xsl:when test="$element/@type = 'BusinessActor'">
+				<circle cx="{$nodeX2+-9}" cy="{$y1 + 2}" r="3" fill="{$fillColor}" stroke="black"
+					stroke-width="1"/>
+				<line x1="{$nodeX2+-9}" y1="{$y1 + 5}" x2="{$nodeX2+-9}" y2="{$nodeY1+14}" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+				<line x1="{$nodeX2+-13}" y1="{$nodeY1+12}" x2="{$nodeX2+-5}" y2="{$nodeY1+12}" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+				<line x1="{$nodeX2+-9}" y1="{$nodeY1+14}" x2="{$nodeX2 - 13}" y2="{$y2}" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+				<line x1="{$nodeX2+-9}" y1="{$nodeY1+14}" x2="{$x2}" y2="{$y2}" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'SystemSoftware'">
+				<circle cx="{$nodeX2 - 10}" cy="{$nodeY1 + 10}" r="5" fill="{$fillColor}" stroke="black"
+					stroke-width="1"/>
+				<circle cx="{$nodeX2 - 12}" cy="{$nodeY1 + 12}" r="5" fill="{$fillColor}" stroke="black"
+					stroke-width="1"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'Node'">
+				<path d="M{$nodeX2 - 18},{$nodeY1 + 8} L{$nodeX2 - 15},{$nodeY1 + 5} h10 v10 L{$nodeX2 - 8},{$nodeY1 + 18}"
+					fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
+				<line x1="{$nodeX2 - 5}" y1="{$nodeY1+5}" x2="{$nodeX2 - 8}" y2="{$nodeY1+8}" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+				<rect x="{$nodeX2 - 18}" y="{$nodeY1+8}" width="10" height="10" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'Device'">
+				<path
+					d="M{$nodeX2 - 17},{$nodeY1+18} L{$nodeX2 - 9},{$nodeY1+11} L{$nodeX2+-3},{$nodeY1+18} L{$nodeX2+-17},{$nodeY1+18}"
+					fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
+				<rect x="{$nodeX2+-15}" y="{$nodeY1+5}" width="11" height="9" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'ApplicationComponent'">
+				<rect x="{$nodeX2+-15}" y="{$nodeY1+5}" width="10" height="14" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+				<rect x="{$nodeX2+-18}" y="{$nodeY1+7}" width="6" height="3" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+				<rect x="{$nodeX2+-18}" y="{$nodeY1+13}" width="6" height="3" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'BusinessRole' or $element/@type = 'Stakeholder'">
+				<circle cx="{$nodeX2+-17}" cy="{$nodeY1+10}" r="4" fill="{$fillColor}" stroke="black"
+					stroke-width="1"/>
+				<rect x="{$nodeX2+-17}" y="{$nodeY1+5}" width="6" height="10" fill="{$fillColor}"
+					stroke="${fillColor}" stroke-width="0.75"/>
+				<circle cx="{$nodeX2+-10}" cy="{$nodeY1+10}" r="4" fill="{$fillColor}" stroke="black"
+					stroke-width="1"/>
+				<line x1="{$nodeX2+-17}" y1="{$nodeY1+6}" x2="{$nodeX2+-11}" y2="{$nodeY1+6}" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+				<line x1="{$nodeX2+-17}" y1="{$nodeY1+14}" x2="{$nodeX2+-11}" y2="{$nodeY1+14}" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+			</xsl:when>
+			
+			<xsl:when test="$element/@type = 'BusinessProcess'">
+				<path
+					d="M{$nodeX2 - 18},{$nodeY1+8} h9 v-3 L{$nodeX2 - 5},{$nodeY1+10} L{$nodeX2 - 9},{$nodeY1+15} v-3 h-9 Z"
+					fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'Contract'">
+				<rect x="{$nodeX2 - 18}" y="{$nodeY1+5}" width="12" height="10" fill="{$fillColor}"
+					stroke="black" stroke-width="0.75"/>
+				<path d="M{$nodeX2 - 18},{$nodeY1+8} h12" fill="{$fillColor}" stroke="black"
+					stroke-width="0.75"/>
+			</xsl:when>
+			<xsl:when
+				test="$element/@type = 'BusinessInteraction' or $element/@type = 'ApplicationInteraction'">
+				<path d="M{$nodeX2 - 12} {$nodeY1+6} A 5 5 0 0 0 {$nodeX2 - 12} {$nodeY1 + 16} Z"
+					fill="{$fillColor}" stroke="black" stroke-width="1"/>
+				<path d="M{$nodeX2 - 9} {$nodeY1+16} A 5 5 0 0 0 {$nodeX2 - 9} {$nodeY1 + 6} Z" fill="{$fillColor}"
+					stroke="black" stroke-width="1"/>
+			</xsl:when>
+			<xsl:when
+				test="$element/@type = 'BusinessCollaboration' or $element/@type = 'ApplicationCollaboration'">
+				<circle cx="{$nodeX2 - 14}" cy="{$nodeY1+11}" r="5" fill="none" stroke="black"
+					stroke-width="1"/>
+				<circle cx="{$nodeX2 - 10}" cy="{$nodeY1+11}" r="5" fill="none" stroke="black"
+					stroke-width="1"/>
+			</xsl:when>
+			<xsl:when
+				test="$element/@type = 'BusinessInterface' or $element/@type = 'ApplicationInterface' or $element/@type = 'InfrastructureInterface'">
+				<circle cx="{$nodeX2 - 8}" cy="{$nodeY1+10}" r="4" fill="{$fillColor}" stroke="black"
+					stroke-width="1"/>
+				<path d="M{$nodeX2 - 13},{$nodeY1+10} h-5" fill="none" stroke="black" stroke-width="1"/>
+			</xsl:when>
+			<xsl:when
+				test="$element/@type = 'BusinessFunction' or $element/@type = 'ApplicationFunction' or $element/@type = 'InfrastructureFunction'">
+				<path d="M{$nodeX2 - 11},{$nodeY1+5} l5,5 v7 l-5,-5 l-5,5 v-7 Z" fill="none" stroke="black"
+					stroke-width="1"/>
+			</xsl:when>
+			<xsl:when
+				test="$element/@type = 'BusinessService' or $element/@type = 'ApplicationService' or $element/@type = 'InfrastructureService'">
+				<rect x="{$nodeX2 - 22}" y="{$nodeY1+5}" rx="3" ry="3" width="13" height="7"
+					fill="{$fillColor}" stroke="black" stroke-width="1"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'Meaning'"> </xsl:when>
+			<xsl:when test="$element/@type = 'Representation'"> </xsl:when>
+			<xsl:when test="$element/@type = 'Location'"> </xsl:when>
+			<xsl:when test="$element/@type = 'Artifact'">
+				<path d="M{$nodeX2 - 14},{$nodeY1+5} h5 l4,4 v10 h-9 Z M{$nodeX2 - 9},{$nodeY1+5} v4 h4"
+					fill="{$fillColor}" stroke="black" stroke-width="1"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'Driver'"> </xsl:when>
+			<xsl:when test="$element/@type = 'Assessment'"> </xsl:when>
+			<xsl:when test="$element/@type = 'Goal'"> </xsl:when>
+			<xsl:when test="$element/@type = 'Principle'"> </xsl:when>
+			<xsl:when test="$element/@type = 'Requirement'">
+				<path d="M{$nodeX2 - 18},${y1 + 5} h9 l9,-4 h-9 Z" fill="{$fillColor}" stroke="black"
+					stroke-width="0.75"/>
+			</xsl:when>
+			<xsl:when test="$element/@type = 'Constraint'"> </xsl:when>
+			<xsl:when test="$element/@type = 'CommunicationPath'"> </xsl:when>
+			<xsl:when test="$element/@type = 'Network'"> </xsl:when>
+		</xsl:choose>
 	</xsl:template>
 	
 	<!-- Create the customized label for an element -->
@@ -1060,13 +1151,15 @@
 		<xsl:value-of select="$groupName"/>
 	</xsl:template>
 
-	<xsl:template name="svgconnection">
+	<xsl:template match="arc:connection">
 		<xsl:variable name="relationshipid" select="@relationshipref"/>
 		<xsl:variable name="relationship" select="//arc:relationship[@identifier = $relationshipid]"/>
 		<xsl:variable name="strokeColor">
 			<xsl:choose>
 				<xsl:when test="arc:style/arc:strokeColor">
-					<xsl:value-of select="concat('rgb(', arc:style/arc:lineColor/@r, ',', arc:style/arc:lineColor/@g, ',', arc:style/arc:lineColor/@b, ')')"/>
+					<xsl:call-template name="color">
+						<xsl:with-param name="color" select="arc:style/arc:lineColor"/>
+					</xsl:call-template>
 				</xsl:when>
 				<!-- set default stroke color to black -->
 				<xsl:otherwise>
@@ -1087,73 +1180,23 @@
 		<xsl:variable name="targetw" select="number($targetnode/@w)"/>
 		<xsl:variable name="targeth" select="number($targetnode/@h)"/>
 
-		<xsl:variable name="bendpoint">
-			<xsl:for-each select="arc:bendpoint"> L<xsl:value-of select="@x"/>,<xsl:value-of
-					select="@y"/>
-			</xsl:for-each>
-		</xsl:variable>
 		<!-- select the start shape of the connection -->
-		<xsl:variable name="markerstart">
-			<xsl:choose>
-				<xsl:when test="$relationship/@type = 'AssignmentRelationship'">marker-start:
-					url(#markerCircleStart);</xsl:when>
-				<xsl:when test="$relationship/@type = 'AggregationRelationship'">marker-start:
-					url(#markerOpenDiamond);</xsl:when>
-				<xsl:when test="$relationship/@type = 'CompositionRelationship'">marker-start:
-					url(#markerClosedDiamond);</xsl:when>
-			</xsl:choose>
+		<xsl:variable name="markerStart">
+			<xsl:call-template name="markerStart">
+				<xsl:with-param name="relationship" select="$relationship"/>
+			</xsl:call-template>
 		</xsl:variable>
 		<!-- select the end shape of the connection -->
-		<xsl:variable name="markerend">
-			<xsl:choose>
-				<xsl:when test="$relationship/@type = 'UsedByRelationship'">marker-end:
-					url(#markerOpenArrow);</xsl:when>
-				<xsl:when test="$relationship/@type = 'AccessRelationship'">marker-end:
-					url(#markerOpenArrow);</xsl:when>
-				<xsl:when test="$relationship/@type = 'AssignmentRelationship'">
-					<xsl:choose>
-						<xsl:when test="$archimateVersion='3.0'">
-							marker-end:url(#markerClosedArrow);
-						</xsl:when>
-						<xsl:otherwise>
-							marker-end:url(#markerCircleEnd);
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:when test="$relationship/@type = 'RealisationRelationship'">marker-end:
-					url(#markerOpenBlockArrow);</xsl:when>
-				<xsl:when test="$relationship/@type = 'SpecialisationRelationship'">marker-end:
-					url(#markerOpenBlockArrow);</xsl:when>
-				<xsl:when test="$relationship/@type = 'TriggeringRelationship'">marker-end:
-					url(#markerClosedArrow);</xsl:when>
-				<xsl:when test="$relationship/@type = 'FlowRelationship'">marker-end:
-					url(#markerClosedArrow);</xsl:when>
-				<xsl:when test="$relationship/@type = 'InfluenceRelationship'">
-					<xsl:choose>
-						<xsl:when test="$archimateVersion='3.0'">
-							marker-end:url(#markerOpenArrow);
-						</xsl:when>
-						<xsl:otherwise>
-							marker-end:url(#markerClosedArrow);
-						</xsl:otherwise>
-					</xsl:choose></xsl:when>
-				<!-- 3.0 support -->
-				<xsl:when test="$relationship/@type = 'ServingRelationship'">marker-end:
-					url(#markerOpenArrow);</xsl:when>
-			</xsl:choose>
+		<xsl:variable name="markerEnd">
+			<xsl:call-template name="markerEnd">
+				<xsl:with-param name="relationship" select="$relationship"/>
+			</xsl:call-template>
 		</xsl:variable>
 		<!-- select the line dash if necessary -->
 		<xsl:variable name="dash">
-			<xsl:choose>
-				<xsl:when test="$relationship/@type = 'AccessRelationship'"
-					>stroke-dasharray:3,3;</xsl:when>
-				<xsl:when test="$relationship/@type = 'RealisationRelationship'"
-					>stroke-dasharray:5,3;</xsl:when>
-				<xsl:when test="$relationship/@type = 'FlowRelationship'"
-					>stroke-dasharray:5,3;</xsl:when>
-				<xsl:when test="$relationship/@type = 'InfluenceRelationship'"
-					>stroke-dasharray:5,3;</xsl:when>
-			</xsl:choose>
+			<xsl:call-template name="connectionDash">
+				<xsl:with-param name="relationship" select="$relationship"/>
+			</xsl:call-template>
 		</xsl:variable>
 		<!-- the second point of the connection as a rectangle. If no bendpoints are defined this is the target node -->
 		<xsl:variable name="next">
@@ -1179,140 +1222,242 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		<!-- the x coordinate of the start point of the connection -->
-		<xsl:variable name="startx">
-			<xsl:choose>
-				<xsl:when test="$sourcex + $sourcew &lt;= $next/rect/@x">
-					<xsl:value-of select="$sourcex + $sourcew"/>
-				</xsl:when>
-				<xsl:when test="$sourcex &gt;= $next/rect/@x + $next/rect/@w">
-					<xsl:value-of select="$sourcex"/>
-				</xsl:when>
-				<xsl:when
-					test="$sourcex &gt;= $next/rect/@x and $sourcex + $sourcew &lt;= $next/rect/@x + $next/rect/@w">
-					<xsl:value-of select="$sourcex + $sourcew div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$sourcex &lt; $next/rect/@x and $sourcex + $sourcew &gt; $next/rect/@x + $next/rect/@w">
-					<xsl:value-of select="$next/rect/@x + $next/rect/@w div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$next/rect/@x &lt; $sourcex + $sourcew div 2 and $next/rect/@x + $next/rect/@w &gt; $sourcex + $sourcew div 2">
-					<xsl:value-of select="$sourcex + $sourcew div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$sourcex &lt; $next/rect/@x + $next/rect/@w div 2 and $sourcex + $sourcew &gt; $next/rect/@x + $next/rect/@w div 2">
-					<xsl:value-of select="$next/rect/@x + $next/rect/@w div 2"/>
-				</xsl:when>
-				<xsl:when test="$sourcex &gt; $next/rect/@x">
-					<xsl:value-of select="$next/rect/@x + $next/rect/@w - 10"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$next/rect/@x + 10"/>
-				</xsl:otherwise>
-			</xsl:choose>
+		<!-- determine the start and end coordinates of the connection -->
+		<xsl:variable name="startX">
+			<xsl:call-template name="connectionStartX">
+				<xsl:with-param name="sourcex" select="$sourcex"/>
+				<xsl:with-param name="sourcew" select="$sourcew"/>
+				<xsl:with-param name="next" select="$next"/>
+			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="starty">
-			<xsl:choose>
-				<xsl:when test="$sourcey + $sourceh &lt;= $next/rect/@y">
-					<xsl:value-of select="$sourcey + $sourceh"/>
-				</xsl:when>
-				<xsl:when test="$sourcey &gt;= $next/rect/@y + $next/rect/@h">
-					<xsl:value-of select="$sourcey"/>
-				</xsl:when>
-				<xsl:when
-					test="$sourcey &gt;= $next/rect/@y and $sourcey + $sourceh &lt;= $next/rect/@y + $next/rect/@h">
-					<xsl:value-of select="$sourcey + $sourceh div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$sourcey &lt; $next/rect/@y and $sourcey + $sourceh &gt; $next/rect/@y + $next/rect/@h">
-					<xsl:value-of select="$next/rect/@y + $next/rect/@h div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$next/rect/@y &lt; $sourcey + $sourceh div 2 and $next/rect/@y + $next/rect/@h &gt; $sourcey + $sourceh div 2">
-					<xsl:value-of select="$sourcey + $sourceh div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$sourcey &lt; $next/rect/@y + $next/rect/@h div 2 and $sourcey + $sourceh &gt; $next/rect/@y + $next/rect/@h div 2">
-					<xsl:value-of select="$next/rect/@y + $next/rect/@h div 2"/>
-				</xsl:when>
-				<xsl:when test="$sourcey &gt; $next/rect/@y">
-					<xsl:value-of select="$next/rect/@y + $next/rect/@h - 10"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$next/rect/@y + 10"/>
-				</xsl:otherwise>
-			</xsl:choose>
+		<xsl:variable name="startY">
+			<xsl:call-template name="connectionStartY">
+				<xsl:with-param name="sourcey" select="$sourcey"/>
+				<xsl:with-param name="sourceh" select="$sourceh"/>
+				<xsl:with-param name="next" select="$next"/>
+			</xsl:call-template>
 		</xsl:variable>
 
-		<xsl:variable name="endx">
-			<xsl:choose>
-				<xsl:when test="$targetx + $targetw &lt;= $previous/rect/@x">
-					<xsl:value-of select="$targetx + $targetw"/>
-				</xsl:when>
-				<xsl:when test="$targetx &gt;= $previous/rect/@x + $previous/rect/@w">
-					<xsl:value-of select="$targetx"/>
-				</xsl:when>
-				<xsl:when
-					test="$targetx &gt;= $previous/rect/@x and $targetx + $targetw &lt;= $previous/rect/@x + $previous/rect/@w">
-					<xsl:value-of select="$targetx + $targetw div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$targetx &lt; $previous/rect/@x and $targetx + $targetw &gt; $previous/rect/@x + $previous/rect/@w">
-					<xsl:value-of select="$previous/rect/@x + $previous/rect/@w div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$targetx &lt; $previous/rect/@x + $previous/rect/@w div 2 and $targetx + $targetw &gt; $previous/rect/@x + $previous/rect/@w div 2">
-					<xsl:value-of select="$previous/rect/@x + $previous/rect/@w div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$previous/rect/@x &lt; $targetx + $targetw div 2 and $previous/rect/@x + $previous/rect/@w &gt; $targetx + $targetw div 2">
-					<xsl:value-of select="$targetx + $targetw div 2"/>
-				</xsl:when>
-				<xsl:when test="$targetx &gt; $previous/rect/@x">
-					<xsl:value-of select="$targetx + 10"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$targetx + $targetw - 10"/>
-				</xsl:otherwise>
-			</xsl:choose>
+		<xsl:variable name="endX">
+			<xsl:call-template name="connectionEndX">
+				<xsl:with-param name="targetx" select="$targetx"/>
+				<xsl:with-param name="targetw" select="$targetw"/>
+				<xsl:with-param name="previous" select="$previous"/>
+			</xsl:call-template>
 		</xsl:variable>
-		<xsl:variable name="endy">
-			<xsl:choose>
-				<xsl:when test="$targety + $targeth &lt;= $previous/rect/@y">
-					<xsl:value-of select="$targety + $targeth"/>
-				</xsl:when>
-				<xsl:when test="$targety &gt;= $previous/rect/@y + $previous/rect/@h">
-					<xsl:value-of select="$targety"/>
-				</xsl:when>
-				<xsl:when
-					test="$targety &gt;= $previous/rect/@y and $targety + $targeth &lt;= $previous/rect/@y + $previous/rect/@h">
-					<xsl:value-of select="$targety + $targeth div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$targety &lt; $previous/rect/@y and $targety + $targeth &gt; $previous/rect/@y + $previous/rect/@h">
-					<xsl:value-of select="$previous/rect/@y + $previous/rect/@h div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$targety &lt; $previous/rect/@y + $previous/rect/@h div 2 and $targety + $targeth &gt; $previous/rect/@y + $previous/rect/@h div 2">
-					<xsl:value-of select="$previous/rect/@y + $previous/rect/@h div 2"/>
-				</xsl:when>
-				<xsl:when
-					test="$previous/rect/@y &lt; $targety + $targeth div 2 and $previous/rect/@y + $previous/rect/@h &gt; $targety + $targeth div 2">
-					<xsl:value-of select="$targety + $targeth div 2"/>
-				</xsl:when>
-				<xsl:when test="$targety &gt; $previous/rect/@y">
-					<xsl:value-of select="$targety + 10"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="$targety + $targeth - 10"/>
-				</xsl:otherwise>
-			</xsl:choose>
+		<xsl:variable name="endY">
+			<xsl:call-template name="connectionEndY">
+				<xsl:with-param name="targety" select="$targety"/>
+				<xsl:with-param name="targeth" select="$targeth"/>
+				<xsl:with-param name="previous" select="$previous"/>
+			</xsl:call-template>
 		</xsl:variable>
 
-		<path d="M{$startx},{$starty} {$bendpoint} L{$endx},{$endy}"
-			style="stroke:{$strokeColor};stroke-width:1; fill:none; {$dash} {$markerstart} {$markerend}"/>
+		<xsl:variable name="bendpoint">
+			<xsl:for-each select="arc:bendpoint"> L<xsl:value-of select="@x"/>,<xsl:value-of
+				select="@y"/>
+			</xsl:for-each>
+		</xsl:variable>
+		<path d="M{$startX},{$startY} {$bendpoint} L{$endX},{$endY}"
+			style="stroke:{$strokeColor};stroke-width:1; fill:none; {$dash} {$markerStart} {$markerEnd}"/>
 
+	</xsl:template>
+	<xsl:template name="connectionDash">
+		<xsl:param name="relationship"/>
+		<xsl:choose>
+			<xsl:when test="$relationship/@type = 'AccessRelationship'"
+				>stroke-dasharray:3,3;</xsl:when>
+			<xsl:when test="$relationship/@type = 'RealisationRelationship'"
+				>stroke-dasharray:5,3;</xsl:when>
+			<xsl:when test="$relationship/@type = 'FlowRelationship'"
+				>stroke-dasharray:5,3;</xsl:when>
+			<xsl:when test="$relationship/@type = 'InfluenceRelationship'"
+				>stroke-dasharray:5,3;</xsl:when>
+		</xsl:choose>
+	</xsl:template>
+	<xsl:template name="connectionEndY">
+		<xsl:param name="targety"/>
+		<xsl:param name="targeth"/>
+		<xsl:param name="previous"/>
+		<xsl:choose>
+			<xsl:when test="$targety + $targeth &lt;= $previous/rect/@y">
+				<xsl:value-of select="$targety + $targeth"/>
+			</xsl:when>
+			<xsl:when test="$targety &gt;= $previous/rect/@y + $previous/rect/@h">
+				<xsl:value-of select="$targety"/>
+			</xsl:when>
+			<xsl:when
+				test="$targety &gt;= $previous/rect/@y and $targety + $targeth &lt;= $previous/rect/@y + $previous/rect/@h">
+				<xsl:value-of select="$targety + $targeth div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$targety &lt; $previous/rect/@y and $targety + $targeth &gt; $previous/rect/@y + $previous/rect/@h">
+				<xsl:value-of select="$previous/rect/@y + $previous/rect/@h div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$targety &lt; $previous/rect/@y + $previous/rect/@h div 2 and $targety + $targeth &gt; $previous/rect/@y + $previous/rect/@h div 2">
+				<xsl:value-of select="$previous/rect/@y + $previous/rect/@h div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$previous/rect/@y &lt; $targety + $targeth div 2 and $previous/rect/@y + $previous/rect/@h &gt; $targety + $targeth div 2">
+				<xsl:value-of select="$targety + $targeth div 2"/>
+			</xsl:when>
+			<xsl:when test="$targety &gt; $previous/rect/@y">
+				<xsl:value-of select="$targety + 10"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$targety + $targeth - 10"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	<xsl:template name="connectionEndX">
+		<xsl:param name="targetx"/>
+		<xsl:param name="targetw"/>
+		<xsl:param name="previous"/>
+		<xsl:choose>
+			<xsl:when test="$targetx + $targetw &lt;= $previous/rect/@x">
+				<xsl:value-of select="$targetx + $targetw"/>
+			</xsl:when>
+			<xsl:when test="$targetx &gt;= $previous/rect/@x + $previous/rect/@w">
+				<xsl:value-of select="$targetx"/>
+			</xsl:when>
+			<xsl:when
+				test="$targetx &gt;= $previous/rect/@x and $targetx + $targetw &lt;= $previous/rect/@x + $previous/rect/@w">
+				<xsl:value-of select="$targetx + $targetw div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$targetx &lt; $previous/rect/@x and $targetx + $targetw &gt; $previous/rect/@x + $previous/rect/@w">
+				<xsl:value-of select="$previous/rect/@x + $previous/rect/@w div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$targetx &lt; $previous/rect/@x + $previous/rect/@w div 2 and $targetx + $targetw &gt; $previous/rect/@x + $previous/rect/@w div 2">
+				<xsl:value-of select="$previous/rect/@x + $previous/rect/@w div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$previous/rect/@x &lt; $targetx + $targetw div 2 and $previous/rect/@x + $previous/rect/@w &gt; $targetx + $targetw div 2">
+				<xsl:value-of select="$targetx + $targetw div 2"/>
+			</xsl:when>
+			<xsl:when test="$targetx &gt; $previous/rect/@x">
+				<xsl:value-of select="$targetx + 10"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$targetx + $targetw - 10"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	<xsl:template name="connectionStartY">
+		<xsl:param name="sourcey"/>
+		<xsl:param name="sourceh"/>
+		<xsl:param name="next"/>
+		<xsl:choose>
+			<xsl:when test="$sourcey + $sourceh &lt;= $next/rect/@y">
+				<xsl:value-of select="$sourcey + $sourceh"/>
+			</xsl:when>
+			<xsl:when test="$sourcey &gt;= $next/rect/@y + $next/rect/@h">
+				<xsl:value-of select="$sourcey"/>
+			</xsl:when>
+			<xsl:when
+				test="$sourcey &gt;= $next/rect/@y and $sourcey + $sourceh &lt;= $next/rect/@y + $next/rect/@h">
+				<xsl:value-of select="$sourcey + $sourceh div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$sourcey &lt; $next/rect/@y and $sourcey + $sourceh &gt; $next/rect/@y + $next/rect/@h">
+				<xsl:value-of select="$next/rect/@y + $next/rect/@h div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$next/rect/@y &lt; $sourcey + $sourceh div 2 and $next/rect/@y + $next/rect/@h &gt; $sourcey + $sourceh div 2">
+				<xsl:value-of select="$sourcey + $sourceh div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$sourcey &lt; $next/rect/@y + $next/rect/@h div 2 and $sourcey + $sourceh &gt; $next/rect/@y + $next/rect/@h div 2">
+				<xsl:value-of select="$next/rect/@y + $next/rect/@h div 2"/>
+			</xsl:when>
+			<xsl:when test="$sourcey &gt; $next/rect/@y">
+				<xsl:value-of select="$next/rect/@y + $next/rect/@h - 10"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$next/rect/@y + 10"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	<xsl:template name="connectionStartX">
+		<xsl:param name="sourcex"/>
+		<xsl:param name="sourcew"/>
+		<xsl:param name="next"/>
+		<xsl:choose>
+			<xsl:when test="$sourcex + $sourcew &lt;= $next/rect/@x">
+				<xsl:value-of select="$sourcex + $sourcew"/>
+			</xsl:when>
+			<xsl:when test="$sourcex &gt;= $next/rect/@x + $next/rect/@w">
+				<xsl:value-of select="$sourcex"/>
+			</xsl:when>
+			<xsl:when
+				test="$sourcex &gt;= $next/rect/@x and $sourcex + $sourcew &lt;= $next/rect/@x + $next/rect/@w">
+				<xsl:value-of select="$sourcex + $sourcew div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$sourcex &lt; $next/rect/@x and $sourcex + $sourcew &gt; $next/rect/@x + $next/rect/@w">
+				<xsl:value-of select="$next/rect/@x + $next/rect/@w div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$next/rect/@x &lt; $sourcex + $sourcew div 2 and $next/rect/@x + $next/rect/@w &gt; $sourcex + $sourcew div 2">
+				<xsl:value-of select="$sourcex + $sourcew div 2"/>
+			</xsl:when>
+			<xsl:when
+				test="$sourcex &lt; $next/rect/@x + $next/rect/@w div 2 and $sourcex + $sourcew &gt; $next/rect/@x + $next/rect/@w div 2">
+				<xsl:value-of select="$next/rect/@x + $next/rect/@w div 2"/>
+			</xsl:when>
+			<xsl:when test="$sourcex &gt; $next/rect/@x">
+				<xsl:value-of select="$next/rect/@x + $next/rect/@w - 10"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$next/rect/@x + 10"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	<xsl:template name="markerEnd">
+		<xsl:param name="relationship"/>
+		<xsl:choose>
+			<xsl:when test="$relationship/@type = 'UsedByRelationship'">marker-end:
+				url(#markerOpenArrow);</xsl:when>
+			<xsl:when test="$relationship/@type = 'AccessRelationship'">marker-end:
+				url(#markerOpenArrow);</xsl:when>
+			<xsl:when test="$relationship/@type = 'AssignmentRelationship'">
+				<xsl:choose>
+					<xsl:when test="$archimateVersion = '3.0'"> marker-end:url(#markerClosedArrow); </xsl:when>
+					<xsl:otherwise> marker-end:url(#markerCircleEnd); </xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:when test="$relationship/@type = 'RealisationRelationship'">marker-end:
+				url(#markerOpenBlockArrow);</xsl:when>
+			<xsl:when test="$relationship/@type = 'SpecialisationRelationship'">marker-end:
+				url(#markerOpenBlockArrow);</xsl:when>
+			<xsl:when test="$relationship/@type = 'TriggeringRelationship'">marker-end:
+				url(#markerClosedArrow);</xsl:when>
+			<xsl:when test="$relationship/@type = 'FlowRelationship'">marker-end:
+				url(#markerClosedArrow);</xsl:when>
+			<xsl:when test="$relationship/@type = 'InfluenceRelationship'">
+				<xsl:choose>
+					<xsl:when test="$archimateVersion = '3.0'"> marker-end:url(#markerOpenArrow); </xsl:when>
+					<xsl:otherwise> marker-end:url(#markerClosedArrow); </xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<!-- 3.0 support -->
+			<xsl:when test="$relationship/@type = 'ServingRelationship'">marker-end:
+				url(#markerOpenArrow);</xsl:when>
+		</xsl:choose>
+	</xsl:template>
+	
+	<xsl:template name="markerStart">
+		<xsl:param name="relationship"/>
+		<xsl:choose>
+			<xsl:when test="$relationship/@type = 'AssignmentRelationship'">marker-start:
+				url(#markerCircleStart);</xsl:when>
+			<xsl:when test="$relationship/@type = 'AggregationRelationship'">marker-start:
+				url(#markerOpenDiamond);</xsl:when>
+			<xsl:when test="$relationship/@type = 'CompositionRelationship'">marker-start:
+				url(#markerClosedDiamond);</xsl:when>
+		</xsl:choose>
 	</xsl:template>
 
 
