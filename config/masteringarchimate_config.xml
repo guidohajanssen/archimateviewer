@@ -1,9 +1,11 @@
 <configuration archimateVersion='3.0'>
-    <elementLabel context="node" includeGrouping='true' includeType='true'/>
+    <elementLabel context="node" includeGrouping='true' includeType='false' includeStereotype='true'/>
     <elementLabel context="element" includeGrouping='true' includeType='true'/>
     <elementLabel context="relationship" includeGrouping='true' includeType='false'/>
+    
     <mappings>
         <elementmapping type="ApplicationComponent" alias="Application Component"/>
+        <elementmapping type="ApplicationFunction" alias="Application Function"/>
         <elementmapping type="SystemSoftware" alias="System Software"/>
         <elementmapping type="BusinessActor" alias="Business Actor"/>
         <elementmapping type="BusinessRole" alias="Business Role"/>
@@ -41,10 +43,9 @@
             direction="from" alias="is accessed by"/>
         <relationshipmapping sourceType="any" targetType="any" type="AccessRelationship"
             direction="to" alias="accesses"/>
-        
         <relationshipmapping sourceType="any" targetType="any" type="ServingRelationship"
             direction="to" alias="services"/>
-        <relationshipmapping sourceType="any" targetType="any" type="UsedByRelationship"
+        <relationshipmapping sourceType="any" targetType="any" type="ServingRelationship"
             direction="from" alias="is serviced by"/>
         <!-- specific mappings -->
         <relationshipmapping sourceType="Node" targetType="Artifact" type="AssignmentRelationship"

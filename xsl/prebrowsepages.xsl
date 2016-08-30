@@ -47,6 +47,11 @@
 	<!-- Place holder include for customization xsl. This will be replaced by the preprocess.xsl -->
 	<xsl:include href="../config/custom.xsl"/>
 
+	<xsl:variable name="stereotypePropertyDefinitionId">
+		<xsl:value-of select="/arc:model/arc:propertydefs/arc:propertydef[@name='av:stereotype']/@identifier"/>
+	</xsl:variable>
+
+
 	<!-- the template that will generate a page for each element and view -->
 	<xsl:template match="/arc:model">
 		<xsl:for-each select="//arc:element | //arc:view">
@@ -979,13 +984,13 @@
 				<circle cx="{$nodeX2+-9}" cy="{$y1 + 2}" r="3" fill="{$fillColor}" stroke="black"
 					stroke-width="1"/>
 				<line x1="{$nodeX2+-9}" y1="{$y1 + 5}" x2="{$nodeX2+-9}" y2="{$nodeY1+14}" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 				<line x1="{$nodeX2+-13}" y1="{$nodeY1+12}" x2="{$nodeX2+-5}" y2="{$nodeY1+12}" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 				<line x1="{$nodeX2+-9}" y1="{$nodeY1+14}" x2="{$nodeX2 - 13}" y2="{$y2}" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 				<line x1="{$nodeX2+-9}" y1="{$nodeY1+14}" x2="{$x2}" y2="{$y2}" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 			</xsl:when>
 			<xsl:when test="$element/@type = 'SystemSoftware'">
 				<circle cx="{$nodeX2 - 10}" cy="{$nodeY1 + 10}" r="5" fill="{$fillColor}" stroke="black"
@@ -995,50 +1000,50 @@
 			</xsl:when>
 			<xsl:when test="$element/@type = 'Node'">
 				<path d="M{$nodeX2 - 18},{$nodeY1 + 8} L{$nodeX2 - 15},{$nodeY1 + 5} h10 v10 L{$nodeX2 - 8},{$nodeY1 + 18}"
-					fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
+					fill="{$fillColor}" stroke="black" stroke-width="1"/>
 				<line x1="{$nodeX2 - 5}" y1="{$nodeY1+5}" x2="{$nodeX2 - 8}" y2="{$nodeY1+8}" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 				<rect x="{$nodeX2 - 18}" y="{$nodeY1+8}" width="10" height="10" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 			</xsl:when>
 			<xsl:when test="$element/@type = 'Device'">
 				<path
 					d="M{$nodeX2 - 17},{$nodeY1+18} L{$nodeX2 - 9},{$nodeY1+11} L{$nodeX2+-3},{$nodeY1+18} L{$nodeX2+-17},{$nodeY1+18}"
-					fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
+					fill="{$fillColor}" stroke="black" stroke-width="1"/>
 				<rect x="{$nodeX2+-15}" y="{$nodeY1+5}" width="11" height="9" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 			</xsl:when>
 			<xsl:when test="$element/@type = 'ApplicationComponent'">
 				<rect x="{$nodeX2+-15}" y="{$nodeY1+5}" width="10" height="14" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 				<rect x="{$nodeX2+-18}" y="{$nodeY1+7}" width="6" height="3" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 				<rect x="{$nodeX2+-18}" y="{$nodeY1+13}" width="6" height="3" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 			</xsl:when>
 			<xsl:when test="$element/@type = 'BusinessRole' or $element/@type = 'Stakeholder'">
 				<circle cx="{$nodeX2+-17}" cy="{$nodeY1+10}" r="4" fill="{$fillColor}" stroke="black"
 					stroke-width="1"/>
 				<rect x="{$nodeX2+-17}" y="{$nodeY1+5}" width="6" height="10" fill="{$fillColor}"
-					stroke="${fillColor}" stroke-width="0.75"/>
+					stroke="${fillColor}" stroke-width="1"/>
 				<circle cx="{$nodeX2+-10}" cy="{$nodeY1+10}" r="4" fill="{$fillColor}" stroke="black"
 					stroke-width="1"/>
 				<line x1="{$nodeX2+-17}" y1="{$nodeY1+6}" x2="{$nodeX2+-11}" y2="{$nodeY1+6}" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 				<line x1="{$nodeX2+-17}" y1="{$nodeY1+14}" x2="{$nodeX2+-11}" y2="{$nodeY1+14}" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 			</xsl:when>
 			
 			<xsl:when test="$element/@type = 'BusinessProcess'">
 				<path
 					d="M{$nodeX2 - 18},{$nodeY1+8} h9 v-3 L{$nodeX2 - 5},{$nodeY1+10} L{$nodeX2 - 9},{$nodeY1+15} v-3 h-9 Z"
-					fill="{$fillColor}" stroke="black" stroke-width="0.75"/>
+					fill="{$fillColor}" stroke="black" stroke-width="1"/>
 			</xsl:when>
 			<xsl:when test="$element/@type = 'Contract'">
 				<rect x="{$nodeX2 - 18}" y="{$nodeY1+5}" width="12" height="10" fill="{$fillColor}"
-					stroke="black" stroke-width="0.75"/>
+					stroke="black" stroke-width="1"/>
 				<path d="M{$nodeX2 - 18},{$nodeY1+8} h12" fill="{$fillColor}" stroke="black"
-					stroke-width="0.75"/>
+					stroke-width="1"/>
 			</xsl:when>
 			<xsl:when
 				test="$element/@type = 'BusinessInteraction' or $element/@type = 'ApplicationInteraction'">
@@ -1083,7 +1088,7 @@
 			<xsl:when test="$element/@type = 'Principle'"> </xsl:when>
 			<xsl:when test="$element/@type = 'Requirement'">
 				<path d="M{$nodeX2 - 18},${y1 + 5} h9 l9,-4 h-9 Z" fill="{$fillColor}" stroke="black"
-					stroke-width="0.75"/>
+					stroke-width="1"/>
 			</xsl:when>
 			<xsl:when test="$element/@type = 'Constraint'"> </xsl:when>
 			<xsl:when test="$element/@type = 'CommunicationPath'"> </xsl:when>
@@ -1104,6 +1109,11 @@
 			<xsl:if test="$elementGroupName != ''">
 				[<xsl:value-of select="$elementGroupName"/>]<xsl:text> </xsl:text>
 			</xsl:if>
+		</xsl:if>
+		<xsl:if test="$config/configuration/elementLabel[@includeStereotype='true' and @context=$context]">	
+			<xsl:for-each select="$element/arc:properties/arc:property[@identifierref=$stereotypePropertyDefinitionId]">
+				&lt;&lt;<xsl:value-of select="arc:value"/>&gt;&gt;
+			</xsl:for-each>	
 		</xsl:if>
 		<xsl:value-of select="$element/arc:label"/>
 		<xsl:if test="$config/configuration/elementLabel[@includeType='true' and @context=$context]">
