@@ -558,7 +558,7 @@
 	
 	<!-- 
 		template for creating an alias for the element type 
-		@type: 		type of the element
+		@element: 	the element
 		@return: 	the alias name of the type of the element as it is defined in the configuration file. If no elementmapping is specified the alias is equal to the type.
 	-->
 	<xsl:template name="elementTypeAlias">
@@ -581,8 +581,9 @@
 		</xsl:choose>
 	</xsl:template>
 
-
-	<!-- template for creating an alias for the relationship type -->
+	<!-- 
+		template for creating an alias for the relationship type 
+	-->
 	<xsl:template name="relationshipTypeAlias">
 		<xsl:param name="relationship"/>
 		<xsl:param name="direction"/>
@@ -801,11 +802,10 @@
 		
 		<xsl:variable name="strokeColor">
 			<xsl:choose>
-				<xsl:when test="arc:style/arc:strokeColor">
+				<xsl:when test="arc:style/arc:lineColor">
 					<xsl:call-template name="color">
 						<xsl:with-param name="color" select="arc:style/arc:lineColor"/>
 					</xsl:call-template>
-					<xsl:value-of select="concat('rgb(', arc:style/arc:lineColor/@r, ',', arc:style/arc:lineColor/@g, ',', arc:style/arc:lineColor/@b, ')')"/>
 				</xsl:when>
 				<!-- set default stroke color to black -->
 				<xsl:otherwise>
