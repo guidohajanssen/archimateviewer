@@ -1281,8 +1281,79 @@
 			</xsl:for-each>
 		</xsl:variable>
 		<path d="M{$startX},{$startY} {$bendpoint} L{$endX},{$endY}"
-			style="stroke:{$strokeColor};stroke-width:1; fill:none; {$dash} {$markerStart} {$markerEnd}"/>
+			style="stroke:{$strokeColor};stroke-width:1; fill:none; {$dash} {$markerStart} {$markerEnd}"
+			width="200"/>
+		
+		<xsl:call-template name="connectionLabel">
+			<xsl:with-param name="relationship" select="$relationship"/>
+			<xsl:with-param name="startX" select="$startX"/>
+			<xsl:with-param name="endX" select="$endX"/>
+			<xsl:with-param name="startY" select="$startY"/>
+			<xsl:with-param name="endY" select="$endY"/>
+		</xsl:call-template>
+	</xsl:template>
+	
+	<!-- 
+		context arc:connection
+	-->
+	<xsl:template name="connectionLabel">
+		<xsl:param name="relationship"/>
+		<xsl:param name="startX"/>
+		<xsl:param name="endX"/>
+		<xsl:param name="startY"/>
+		<xsl:param name="endY"/>
+		<xsl:variable name="connectionLabel">
+			<xsl:choose>
+				<xsl:when test="arc:label">
+					<xsl:value-of select="arc:label"/>
+				</xsl:when>
+				<xsl:when test="$relationship/arc:label">
+					<xsl:value-of select="$relationship/arc:label"/>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:if test="$connectionLabel != ''">
+			<xsl:variable name="bendpointCount" select="count(arc:bendpoint)"/>
+			<xsl:variable name="textX">
+				<xsl:choose>
+					<xsl:when test="$bendpointCount = 0">
+						<xsl:value-of select="$startX + ($endX - $startX) div 2"/>
+					</xsl:when>
+					<xsl:when test="count(arc:bendpoint) mod 2 = 1">
+						<xsl:value-of select="arc:bendpoint[($bendpointCount - 1) div 2 + 1]/@x"/>
+					</xsl:when>
+					<xsl:when test="count(arc:bendpoint) mod 2 = 0">
+						<xsl:value-of
+							select="
+								arc:bendpoint[$bendpointCount div 2]/@x +
+								(arc:bendpoint[$bendpointCount div 2 + 1]/@x - arc:bendpoint[$bendpointCount div 2]/@x) div 2"
+						/>
+					</xsl:when>
+				</xsl:choose>
+			</xsl:variable>
+			<xsl:variable name="textY">
+				<xsl:choose>
+					<xsl:when test="$bendpointCount = 0">
+						<xsl:value-of select="$startY + ($endY - $startY) div 2"/>
+					</xsl:when>
+					<xsl:when test="count(arc:bendpoint) mod 2 = 1">
+						<xsl:value-of select="arc:bendpoint[($bendpointCount - 1) div 2 + 1]/@y"/>
+					</xsl:when>
+					<xsl:when test="count(arc:bendpoint) mod 2 = 0">
+						<xsl:value-of
+							select="
+								arc:bendpoint[$bendpointCount div 2]/@y +
+								(arc:bendpoint[$bendpointCount div 2 + 1]/@y - arc:bendpoint[$bendpointCount div 2]/@y) div 2"
+						/>
+					</xsl:when>
+				</xsl:choose>
+			</xsl:variable>
 
+
+			<text x="{$textX}" y="{$textY}" >
+				<xsl:value-of select="$connectionLabel"/>
+			</text>
+		</xsl:if>
 	</xsl:template>
 	<xsl:template name="connectionDash">
 		<xsl:param name="relationship"/>
