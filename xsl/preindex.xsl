@@ -10,6 +10,10 @@
 
 <xsl:include href="../config/custom.xsl"/>
 
+	<xsl:variable name="chapterPropertyDefinitionId">
+		<xsl:value-of select="/arc:model/arc:propertydefs/arc:propertydef[@name='av:chapter']/@identifier"/>
+	</xsl:variable>	
+
 <xsl:template match="/">
 	<html>
 		<head>
@@ -67,7 +71,10 @@
 						</div>
 						<div class="panel-body root-panel-body">
 							<ul class="tree">
-								<xsl:apply-templates select="/arc:model/arc:organization/arc:item[arc:label and arc:item]"/>
+								<xsl:for-each select="/arc:model/arc:organization/arc:item[arc:label and arc:item]">
+									<xsl:sort select="./arc:properties/arc:property[@identifierref=$chapterPropertyDefinitionId]/arc:value"/>		
+									<xsl:apply-templates select="."/>		
+								</xsl:for-each>
 							</ul>
 						</div>
 					</div>
@@ -103,7 +110,7 @@
 		<li class="tree-folder"><span><i class="glyphicon glyphicon-triangle-right"></i><xsl:value-of select="arc:label"/></span>
 			<ul>
 				<xsl:for-each select="arc:item[arc:label and arc:item]">
-					<xsl:sort select="arc:label"/>		
+					<xsl:sort select="./arc:properties/arc:property[@identifierref=$chapterPropertyDefinitionId]/arc:value"/>		
 					<xsl:apply-templates select="."/>		
 				</xsl:for-each>
 				<xsl:for-each select="arc:item[@identifierref]">
