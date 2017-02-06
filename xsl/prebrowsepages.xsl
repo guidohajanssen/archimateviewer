@@ -1283,14 +1283,7 @@
 		<path d="M{$startX},{$startY} {$bendpoint} L{$endX},{$endY}"
 			style="stroke:{$strokeColor};stroke-width:1; fill:none; {$dash} {$markerStart} {$markerEnd}"
 			width="200"/>
-		
-		<xsl:call-template name="connectionLabel">
-			<xsl:with-param name="relationship" select="$relationship"/>
-			<xsl:with-param name="startX" select="$startX"/>
-			<xsl:with-param name="endX" select="$endX"/>
-			<xsl:with-param name="startY" select="$startY"/>
-			<xsl:with-param name="endY" select="$endY"/>
-		</xsl:call-template>
+
 	</xsl:template>
 	
 	<!-- 
