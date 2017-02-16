@@ -1178,7 +1178,7 @@
 		<xsl:variable name="relationship" select="//arc:relationship[@identifier = $relationshipid]"/>
 		<xsl:variable name="strokeColor">
 			<xsl:choose>
-				<xsl:when test="arc:style/arc:strokeColor">
+				<xsl:when test="arc:style/arc:lineColor">
 					<xsl:call-template name="color">
 						<xsl:with-param name="color" select="arc:style/arc:lineColor"/>
 					</xsl:call-template>
