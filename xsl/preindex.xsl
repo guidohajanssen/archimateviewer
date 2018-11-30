@@ -114,7 +114,7 @@
 					<xsl:apply-templates select="."/>		
 				</xsl:for-each>
 				<xsl:for-each select="arc:item[@identifierref]">
-					<xsl:sort select="//*[@identifier=current()/@identifierref]/arc:label[1]"/>
+					<!--xsl:sort select="//*[@identifier=current()/@identifierref]/arc:label[1]"/-->
 					<li class="tree-element">
 						<!-- add properties to the tree element for search purposes -->
                         <xsl:for-each select="//*[@identifier=current()/@identifierref]/arc:properties/arc:property">
