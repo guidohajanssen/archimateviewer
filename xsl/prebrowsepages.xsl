@@ -132,6 +132,8 @@
 								<th/>
 								<xsl:for-each
 									select="/arc:model/arc:organization//arc:item[arc:label = $xfolder]//arc:item[@identifierref]">
+									<xsl:sort
+								select="//arc:element[@identifier = current()/@identifierref]/arc:label"/>
 									<xsl:variable name="columnid" select="@identifierref"/>
 									<th class="rotate">
 										<div>
@@ -156,6 +158,8 @@
 									</td>
 									<xsl:for-each
 										select="/arc:model/arc:organization//arc:item[arc:label = $xfolder]//arc:item[@identifierref]">
+										<xsl:sort
+								select="//arc:element[@identifier = current()/@identifierref]/arc:label"/>
 										<xsl:variable name="columnid" select="@identifierref"/>
 										<td class="text-center"
 											style="border:1px solid #ccc; width:30px padding: 5px 10px;">
