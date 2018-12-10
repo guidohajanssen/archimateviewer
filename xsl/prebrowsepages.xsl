@@ -240,11 +240,17 @@
 			<h4>
 				<xsl:value-of select="current-grouping-key()"/>
 			</h4>
+			<xsl:for-each select="current-group()/arc:item[arc:label]">
+				<xsl:call-template name="catalogFolder">
+					<xsl:with-param name="properties" select="$properties"/>
+					<xsl:with-param name="folder" select="current()/arc:label"/>
+				</xsl:call-template>
+			</xsl:for-each>
 			<table class="table table-condensed table-bordered">
 				<xsl:call-template name="catalogHeader">
 					<xsl:with-param name="properties" select="$properties"/>
 				</xsl:call-template>
-				<xsl:for-each select="current-group()//arc:item[@identifierref]">
+				<xsl:for-each select="current-group()/arc:item[@identifierref]">
 					<xsl:sort
 						select="//arc:element[@identifier = current()/@identifierref]/arc:label"/>
 						<xsl:call-template name="catalogLine">
