@@ -206,7 +206,7 @@
 				
 				<!-- generating for sub-folders -->
 				<xsl:call-template name="catalogFolder">
-					<xsl:with-param name="properties" select=$properties"/>
+					<xsl:with-param name="properties" select="$properties"/>
 					<xsl:with-param name="folder" select="$folder"/>
 				</xsl:call-template>
 				<!-- generate elements in the specified folder -->
