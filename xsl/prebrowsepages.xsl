@@ -233,31 +233,30 @@
 	<xsl:template name="catalogFolder">
 		<xsl:param name="properties"/>
 		<xsl:param name="folder"/>
+		<table class="table table-condensed table-bordered">
 		<xsl:for-each-group
 			select="/arc:model/arc:organization//arc:item[arc:label = $folder]/arc:item"
 			group-by="arc:label">
 			<xsl:sort select="current-grouping-key()"/>
-			<h4>
+			<tr><th colspan="10>
 				<xsl:value-of select="current-grouping-key()"/>
-			</h4>
-				<xsl:call-template name="catalogFolder">
+			</th></tr>
+			<xsl:call-template name="catalogFolder">
+				<xsl:with-param name="properties" select="$properties"/>
+				<xsl:with-param name="folder" select="current-grouping-key()"/>
+			</xsl:call-template>
+					
+			<xsl:call-template name="catalogHeader">
+				<xsl:with-param name="properties" select="$properties"/>
+			</xsl:call-template>
+			<xsl:for-each select="current-group()/arc:item[@identifierref]">
+				<xsl:sort select="//arc:element[@identifier = current()/@identifierref]/arc:label"/>
+				<xsl:call-template name="catalogLine">
 					<xsl:with-param name="properties" select="$properties"/>
-					<xsl:with-param name="folder" select="current-grouping-key()"/>
 				</xsl:call-template>
-			
-			<table class="table table-condensed table-bordered">
-				<xsl:call-template name="catalogHeader">
-					<xsl:with-param name="properties" select="$properties"/>
-				</xsl:call-template>
-				<xsl:for-each select="current-group()/arc:item[@identifierref]">
-					<xsl:sort
-						select="//arc:element[@identifier = current()/@identifierref]/arc:label"/>
-						<xsl:call-template name="catalogLine">
-							<xsl:with-param name="properties" select="$properties"/>
-						</xsl:call-template>
-				</xsl:for-each>
-			</table>
+			</xsl:for-each>
 		</xsl:for-each-group>
+		</table>	
 	</xsl:template>
 	
 	<xsl:template name="catalogHeader">
