@@ -238,7 +238,7 @@
 			select="/arc:model/arc:organization//arc:item[arc:label = $folder]/arc:item"
 			group-by="arc:label">
 			<xsl:sort select="current-grouping-key()"/>
-			<tr><th colspan="10>
+			<tr><th colspan="10">
 				<xsl:value-of select="current-grouping-key()"/>
 			</th></tr>
 			<xsl:call-template name="catalogFolder">
