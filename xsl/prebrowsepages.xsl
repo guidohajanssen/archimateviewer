@@ -205,10 +205,12 @@
 					select="/arc:model/arc:propertydefs/arc:propertydef[@identifier = //arc:element[@identifier = /arc:model/arc:organization//arc:item[arc:label = $folder]//arc:item/@identifierref]//arc:property/@identifierref]"/>
 				
 				<!-- generating for sub-folders -->
+				<table class="table table-condensed table-bordered">
 				<xsl:call-template name="catalogFolder">
 					<xsl:with-param name="properties" select="$properties"/>
 					<xsl:with-param name="folder" select="$folder"/>
 				</xsl:call-template>
+				</table>
 				<!-- generate elements in the specified folder -->
 				<xsl:if
 					test="/arc:model/arc:organization//arc:item[arc:label = $folder]/arc:item[@identifierref]">
@@ -233,7 +235,6 @@
 	<xsl:template name="catalogFolder">
 		<xsl:param name="properties"/>
 		<xsl:param name="folder"/>
-		<table class="table table-condensed table-bordered">
 		<xsl:for-each-group
 			select="/arc:model/arc:organization//arc:item[arc:label = $folder]/arc:item"
 			group-by="arc:label">
@@ -255,8 +256,7 @@
 					<xsl:with-param name="properties" select="$properties"/>
 				</xsl:call-template>
 			</xsl:for-each>
-		</xsl:for-each-group>
-		</table>	
+		</xsl:for-each-group>	
 	</xsl:template>
 	
 	<xsl:template name="catalogHeader">
